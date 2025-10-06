@@ -1,19 +1,6 @@
 <template>
-  <header class="main-header">
-    <nav class="nav-shortcut">
-      <ul>
-        <li><a href="#tentang-kami">Tentang Kami</a></li>
-        <li><a href="#visi-misi">Visi & Misi</a></li>
-        <li><a href="#kerjasama">Kerjasama</a></li>
-        <li><a href="#lokasi">Lokasi</a></li>
-        <li><a href="#kontak">Kontak</a></li>
-      </ul>
-      <button class="chatbot-btn" disabled title="Segera hadir!">
-        <i class="fa fa-robot"></i> AI Chatbot
-      </button>
-    </nav>
-  </header>
-  <div class="page-container">
+  <MainLayout>
+    <div class="page-container">
     <section class="home-hero">
       <h1 class="home-title">Apotek Tiarana Farma</h1>
       <p class="home-subtitle">Solusi Kesehatan Terpercaya Sejak 2010</p>
@@ -66,11 +53,12 @@
         <li><strong>Alamat:</strong> Jl. Sehat No. 10, [Nama Kota]</li>
       </ul>
     </section>
-  </div>
+    </div>
+  </MainLayout>
 </template>
 
 <script setup>
-// Tambahkan logic jika diperlukan
+import MainLayout from '../Layouts/MainLayout.vue';
 </script>
 
 <style lang="scss" scoped>
