@@ -1,12 +1,121 @@
-// resources/css/home.scss
 @import '_variables.scss';
+
+.main-header {
+  background: $primary-color;
+  color: $text-light;
+  padding: 0.5rem 0;
+  box-shadow: $box-shadow;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-shortcut {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+  ul {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li a {
+      color: $text-light;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+      &:hover {
+        color: $accent-color;
+      }
+    }
+  }
+  .chatbot-btn {
+    background: $accent-color;
+    color: $text-dark;
+    border: none;
+    border-radius: $border-radius;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.7;
+  }
+}
+
+.page-container {
+  background: $background-light;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
 .home-hero {
-    background-color: #e8f5e9; /* Warna latar belakang unik */
-    padding: 60px;
+  background: linear-gradient(90deg, $primary-color 30%, $secondary-color 100%);
+  padding: 60px 0;
+  text-align: center;
+  color: $text-light;
+  border-radius: $border-radius;
+  margin-bottom: 32px;
+  box-shadow: $box-shadow;
 }
 
 .home-title {
-    font-size: 3rem;
-    color: $primary-color; /* Variabel SCSS yang belum dikenal */
-    margin-bottom: 15px;
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  letter-spacing: 2px;
+}
+
+.home-subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 0;
+}
+
+section {
+  background: $text-light;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  padding: 32px 24px;
+  margin-bottom: 28px;
+}
+
+.company-info, .vision-mission, .location-contact {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h2 {
+  @include section-title;
+}
+
+ul {
+  padding-left: 18px;
+  margin-bottom: 0;
+}
+
+.gmaps-container {
+  margin: 18px 0;
+  @include center-content;
+  iframe {
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-hero {
+    padding: 40px 0;
+  }
+  section {
+    padding: 18px 8px;
+  }
+  .gmaps-container iframe {
+    width: 100% !important;
+    height: 200px !important;
+  }
 }

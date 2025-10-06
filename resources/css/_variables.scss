@@ -1,4 +1,21 @@
-// resources/css/_variables.scss
-$primary-color: #007bff;
+$primary-color: #00008B;         // Navy Blue
+$secondary-color: #F0F0F0;       // Abu-abu muda
+$accent-color: #008080;          // Teal
+$background-light: #FFFFFF;      // Putih
 $text-dark: #333;
-@mixin center-content { /* ... */ }
+$text-light: #fff;
+$border-radius: 12px;
+$box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+
+@mixin center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin section-title {
+  font-size: 2rem;
+  color: $primary-color;
+  margin-bottom: 18px;
+  font-weight: 700;
+}
