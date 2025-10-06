@@ -1,7 +1,7 @@
-
 import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, h } from 'vue';
 import './bootstrap';
+import '/resources/css/app.scss';
 
 // Fungsi helper untuk secara otomatis mengimpor komponen Vue
 function resolvePageComponent(name, pages) {

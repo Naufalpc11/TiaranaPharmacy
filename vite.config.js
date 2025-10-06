@@ -15,6 +15,7 @@ export default defineConfig({
                     includeAbsolute: false,
                 },
             },
-        }),
+        })
     ],
+    // HAPUS properti 'resolve' dan 'css' di sini
 });

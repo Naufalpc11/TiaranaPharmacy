@@ -1,0 +1,12 @@
+// resources/css/home.scss
+@import '_variables.scss';
+.home-hero {
+    background-color: #e8f5e9; /* Warna latar belakang unik */
+    padding: 60px;
+}
+
+.home-title {
+    font-size: 3rem;
+    color: $primary-color; /* Variabel SCSS yang belum dikenal */
+    margin-bottom: 15px;
+}

@@ -1,19 +1,25 @@
-/* Reset CSS dasar */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+// resources/css/app.scss
+@import '_variables.scss';
+// 1. Definisikan Variabel & Mixin (Agar dikenal di file ini)
+$primary-color: #007bff;
+$text-dark: #333333;
+
+@mixin center-content {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
 }
 
-/* Variabel warna apotek */
-:root {
-    --primary-blue: #007bff;
-    --primary-green: #28a745;
-    --text-dark: #333;
-    --bg-light: #f8f9fa;
-}
-
+// 2. Style Global (Body, Reset)
 body {
-    font-family: Arial, sans-serif;
-    background-color: var(--bg-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f8f8;
+    color: $text-dark;
+}
+
+// 3. Global Utility/Base Class (Misalnya untuk layout)
+.page-container {
+    max-width: 1200px;
+    @include center-content;
+    padding: 0 20px;
 }
