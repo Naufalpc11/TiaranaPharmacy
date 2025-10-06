@@ -1,0 +1,19 @@
+/* Reset CSS dasar */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Variabel warna apotek */
+:root {
+    --primary-blue: #007bff;
+    --primary-green: #28a745;
+    --text-dark: #333;
+    --bg-light: #f8f9fa;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-light);
+}
