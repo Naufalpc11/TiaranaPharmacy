@@ -1,9 +1,12 @@
 <template>
   <MainLayout>
     <div class="page-container">
-    <section class="home-hero">
-      <h1 class="home-title">Apotek Tiarana Farma</h1>
-      <p class="home-subtitle">Solusi Kesehatan Terpercaya Sejak 2010</p>
+    <section class="hero-bg-image full-viewport">
+      <div class="hero-overlay">
+        <h1 class="home-title">Apotek Tiarana Farma</h1>
+        <p class="home-subtitle">Melayani Dengan Sepenuh Hati</p>
+        <p class="home-subtitle">Berdiri Sejak 2010</p>
+      </div>
     </section>
 
     <section class="company-info" id="tentang-kami">

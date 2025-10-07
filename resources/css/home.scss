@@ -1,5 +1,9 @@
 @import '_variables.scss';
 
+:root {
+  --header-height: 60px;
+}
+
 .main-header {
   background: $primary-color;
   color: $text-light;
@@ -8,6 +12,8 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  height: var(--header-height);
+  width: 100%;
 }
 
 .nav-shortcut {
@@ -48,31 +54,92 @@
 }
 
 .page-container {
+  width: 100%;
   background: $background-light;
-  min-height: 100vh;
-  padding-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.home-hero {
-  background: linear-gradient(90deg, $primary-color 30%, $secondary-color 100%);
-  padding: 60px 0;
+.hero-bg-image {
+  position: relative;
+  background-image: url('/images/pharmacy-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+}
+
+/* Content sections styling */
+section:not(.hero-bg-image) {
+  max-width: 1200px;
+  width: 90%;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.company-info,
+.vision-mission,
+.partnership,
+.location-contact {
+  h2 {
+    color: $primary-color;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Maps container styling */
+.gmaps-container {
+  width: 100%;
+  margin: 1.5rem 0;
+
+  iframe {
+    width: 100%;
+    border-radius: 8px;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  section:not(.hero-bg-image) {
+    width: 95%;
+    padding: 1.5rem;
+    margin: 1rem auto;
+  }
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  color: $text-light;
-  border-radius: $border-radius;
-  margin-bottom: 32px;
-  box-shadow: $box-shadow;
+  padding: 20px;
 }
 
 .home-title {
-  font-size: 3rem;
+  font-size: 4.5rem;
   font-weight: bold;
-  margin-bottom: 15px;
-  letter-spacing: 2px;
+  margin-bottom: 20px;
+  letter-spacing: 3px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .home-subtitle {
-  font-size: 1.3rem;
+  font-size: 1.8rem;
   margin-bottom: 0;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 section {
