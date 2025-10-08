@@ -17,6 +17,7 @@
     "dependencies": {
         "@inertiajs/vue3": "^2.2.6",
         "@vitejs/plugin-vue": "^6.0.1",
+        "gsap": "^3.13.0",
         "vue": "^3.5.22"
     },
     "name": "tiaranapharmacy",
