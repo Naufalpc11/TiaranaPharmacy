@@ -22,22 +22,18 @@
             </div>
 
             <div class="team-section">
-                <h2>Tim Kami</h2>
+                <h2>Apoteker Kami</h2>
                 <div class="team-grid">
                     <div class="team-member">
-                        <img src="/images/team/pharmacist1.jpg" alt="Apoteker">
-                        <h3>Dr. Sarah Johnson</h3>
+                        <div class="img-container">
+                            <img src="/images/team/pharmacist1.jpg" alt="Apoteker Penanggung Jawab">
+                        </div>
+                        <h3>Dr. Sarah Johnson, S.Farm., Apt.</h3>
                         <p>Apoteker Penanggung Jawab</p>
-                    </div>
-                    <div class="team-member">
-                        <img src="/images/team/pharmacist2.jpg" alt="Asisten Apoteker">
-                        <h3>David Wilson</h3>
-                        <p>Asisten Apoteker</p>
-                    </div>
-                    <div class="team-member">
-                        <img src="/images/team/pharmacist3.jpg" alt="Staff">
-                        <h3>Emily Brown</h3>
-                        <p>Staff Farmasi</p>
+                        <div class="pharmacist-info">
+                            <p>STRA: 19880824/STRA-YYYY/2023</p>
+                            <p>SIPA: 19880824/SIPA-XX/2023</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -50,7 +46,7 @@
                             <i class="fas fa-map-marker-alt"></i>
                             <div>
                                 <h3>Alamat</h3>
-                                <p>Jl. Sehat No. 10, [Nama Kota]</p>
+                                <p>Jl. Sepinggan Baru</p>
                             </div>
                         </div>
                         <div class="contact-item">

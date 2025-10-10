@@ -9,7 +9,7 @@
                 <h3>Kontak</h3>
                 <ul>
                     <li><i class="fas fa-phone"></i> 0812-3456-7890</li>
-                    <li><i class="fas fa-envelope"></i> info@tiaranafarma.com</li>
+                    <li><i class="fas fa-envelope"></i> tiaranafarma@gmail.com</li>
                     <li><i class="fas fa-map-marker-alt"></i> Jl. Sepinggan Baru</li>
                 </ul>
             </div>

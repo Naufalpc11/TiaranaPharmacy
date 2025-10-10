@@ -5,7 +5,7 @@ import { TextPlugin } from 'gsap/TextPlugin';
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
 export const initializeAboutUsAnimations = () => {
-  // Initial hero section animation
+
   const heroTimeline = gsap.timeline({
     defaults: { ease: 'power3.out' }
   });
@@ -26,7 +26,7 @@ export const initializeAboutUsAnimations = () => {
       opacity: 0,
       duration: 1
     }, '-=0.7');
-  // About content section reveal
+
   const aboutContentTimeline = gsap.timeline({
     scrollTrigger: {
       trigger: '.about-content',
@@ -42,7 +42,6 @@ export const initializeAboutUsAnimations = () => {
     ease: 'power3.out'
   });
 
-  // History section animation with split text effect
   const historySection = document.querySelector('.history-section');
   if (historySection) {
     const historySectionTimeline = gsap.timeline({
@@ -80,7 +79,6 @@ export const initializeAboutUsAnimations = () => {
     ease: 'back.out(1.7)'
   });
 
-  // Team members stagger animation with hover effect
   const teamMembers = document.querySelectorAll('.team-member');
   gsap.from(teamMembers, {
     scrollTrigger: {
@@ -97,7 +95,6 @@ export const initializeAboutUsAnimations = () => {
     }
   });
 
-  // Add hover animations for team members
   teamMembers.forEach(member => {
     const image = member.querySelector('img');
     const info = member.querySelectorAll('h3, p');

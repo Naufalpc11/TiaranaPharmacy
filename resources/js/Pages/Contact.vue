@@ -4,8 +4,8 @@
             <h2>Kontak</h2>
             <ul>
             <li><strong>Telepon:</strong> 0812-3456-7890</li>
-            <li><strong>Email:</strong> info@tiaranafarma.com</li>
-            <li><strong>Alamat:</strong> Jl. Sehat No. 10, [Nama Kota]</li>
+            <li><strong>Email:</strong> tiaranafarma@gmail.com</li>
+            <li><strong>Alamat:</strong> Jl. Sepinggan Baru</li>
             </ul>
         </section>
     </MainLayout>
