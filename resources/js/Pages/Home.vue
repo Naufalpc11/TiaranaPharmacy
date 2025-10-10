@@ -18,7 +18,7 @@
       <div class="feature-item">
         <i class="fas fa-clock"></i>
         <h3>Jam Operasional</h3>
-        <p>Buka setiap hari dari pukul 08:00 - 21:00 WIB</p>
+        <p>Buka setiap hari dari pukul 08:00 - 22:00 WITA</p>
       </div>
       <div class="feature-item">
         <i class="fas fa-shield-alt"></i>
@@ -122,12 +122,9 @@
 </template>
 
 <script setup>
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onMounted, ref } from 'vue';
 import MainLayout from '../Layouts/MainLayout.vue';
-
-gsap.registerPlugin(ScrollTrigger);
+import { initializeHomeAnimations } from '../animations/homeAnimations';
 
 // Refs for animations
 const heroContent = ref(null);
@@ -144,173 +141,20 @@ const servicesTitle = ref(null);
 const serviceRow1 = ref(null);
 
 onMounted(() => {
-  // Set initial states and animations
-  // Hero section animation with popup effect
-  gsap.set(heroContent.value, {
-    autoAlpha: 0,
-    scale: 0.9
-  });
-
-  gsap.set([heroTitle.value, heroSubtitle1.value, heroSubtitle2.value], {
-    autoAlpha: 0,
-    y: 30
-  });
-
-  const heroTimeline = gsap.timeline({
-    defaults: {
-      ease: 'power3.out'
-    }
-  });
-
-  heroTimeline
-    .to(heroContent.value, {
-      autoAlpha: 1,
-      scale: 1,
-      duration: 1,
-      ease: 'power2.out'
-    })
-    .to(heroTitle.value, {
-      autoAlpha: 1,
-      y: 0,
-      duration: 0.8
-    }, '-=0.3')
-    .to(heroSubtitle1.value, {
-      autoAlpha: 1,
-      y: 0,
-      duration: 0.6
-    }, '-=0.4')
-    .to(heroSubtitle2.value, {
-      autoAlpha: 1,
-      y: 0,
-      duration: 0.6
-    }, '-=0.4');
-
-  // Features grid animation
-  gsap.set(featuresGrid.value.children, {
-    autoAlpha: 0,
-    y: 50
-  });
-
-  gsap.to(featuresGrid.value.children, {
-    scrollTrigger: {
-      trigger: featuresGrid.value,
-      start: 'top 90%',
-      end: 'top 60%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 0.5
-    },
-    y: 0,
-    autoAlpha: 1,
-    duration: 0.5,
-    stagger: 0.1
-  });
-
-  // About section animations
-  gsap.set(aboutText.value, {
-    autoAlpha: 0,
-    x: -50
-  });
-
-  gsap.set(aboutImage.value, {
-    autoAlpha: 0,
-    x: 50
-  });
-
-  gsap.to(aboutText.value, {
-    scrollTrigger: {
-      trigger: aboutSection.value,
-      start: 'top 85%',
-      end: 'top 50%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 0.5
-    },
-    x: 0,
-    autoAlpha: 1,
-    duration: 0.5
-  });
-
-  gsap.to(aboutImage.value, {
-    scrollTrigger: {
-      trigger: aboutSection.value,
-      start: 'top 85%',
-      end: 'top 50%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 0.5
-    },
-    x: 0,
-    autoAlpha: 1,
-    duration: 0.5
-  });
-
-  // About features animation
-  gsap.set(aboutFeatures.value.children, {
-    autoAlpha: 0,
-    y: 30
-  });
-
-  gsap.to(aboutFeatures.value.children, {
-    scrollTrigger: {
-      trigger: aboutFeatures.value,
-      start: 'top 85%',
-      end: 'top 50%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 0.5
-    },
-    y: 0,
-    autoAlpha: 1,
-    duration: 0.4,
-    stagger: {
-      each: 0.1,
-      from: "start"
-    }
-  });
-
-  // Services section animations
-  gsap.set(servicesTitle.value, {
-    y: 30,
-    opacity: 0
-  });
-
-  gsap.to(servicesTitle.value, {
-    scrollTrigger: {
-      trigger: servicesSection.value,
-      start: 'top 80%',
-      end: 'top 20%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 1
-    },
-    y: 0,
-    opacity: 1,
-    duration: 0.8
-  });
-
-  // Animate each service card
-  const serviceCards = document.querySelectorAll('.service-card');
-  serviceCards.forEach((card, index) => {
-    const direction = index % 2 === 0 ? -1 : 1;
-
-    // Set initial state
-    gsap.set(card, {
-      x: 100 * direction,
-      opacity: 0,
-      scale: 0.8
-    });
-
-    // Create scroll trigger animation
-    gsap.to(card, {
-      scrollTrigger: {
-        trigger: card,
-        start: 'top 80%',
-        end: 'top 20%',
-        scrub: 1,
-        toggleActions: 'play reverse play reverse'
-      },
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      duration: 1.5,
-      ease: 'power2.out'
-    });
+  // Initialize animations with refs
+  initializeHomeAnimations({
+    heroContent: heroContent.value,
+    heroTitle: heroTitle.value,
+    heroSubtitle1: heroSubtitle1.value,
+    heroSubtitle2: heroSubtitle2.value,
+    featuresGrid: featuresGrid.value,
+    aboutSection: aboutSection.value,
+    aboutText: aboutText.value,
+    aboutImage: aboutImage.value,
+    aboutFeatures: aboutFeatures.value,
+    servicesSection: servicesSection.value,
+    servicesTitle: servicesTitle.value,
+    serviceRow1: serviceRow1.value
   });
 });
 </script>

@@ -10,14 +10,14 @@
                 <ul>
                     <li><i class="fas fa-phone"></i> 0812-3456-7890</li>
                     <li><i class="fas fa-envelope"></i> info@tiaranafarma.com</li>
-                    <li><i class="fas fa-map-marker-alt"></i> Jl. Sehat No. 10, [Nama Kota]</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Jl. Sepinggan Baru</li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Jam Operasional</h3>
                 <ul>
-                    <li>Senin - Sabtu: 08:00 - 21:00</li>
-                    <li>Minggu: 09:00 - 20:00</li>
+                    <li>Senin - Sabtu: 08:00 - 22:00</li>
+                    <li>Minggu: 09:00 - 22:00</li>
                 </ul>
             </div>
             <div class="footer-section">

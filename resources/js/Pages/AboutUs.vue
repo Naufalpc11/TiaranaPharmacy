@@ -2,7 +2,10 @@
     <MainLayout>
         <div class="about-us-container">
             <div class="about-header">
-                <h1>Tentang Kami</h1>
+                <div class="about-header-overlay">
+                    <h1>Tentang Kami</h1>
+                    <p>Apotek Tiarana Farma adalah apotek terpercaya yang menyediakan layanan kesehatan berkualitas dengan dukungan tim profesional dan fasilitas modern</p>
+                </div>
             </div>
 
             <div class="about-content">
@@ -81,7 +84,13 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
+import { initializeAboutUsAnimations } from '../animations/aboutUsAnimations';
 import MainLayout from '../Layouts/MainLayout.vue';
+
+onMounted(() => {
+    initializeAboutUsAnimations();
+});
 </script>
 
 <style lang="scss" scoped>
