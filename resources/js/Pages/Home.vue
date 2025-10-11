@@ -48,7 +48,7 @@
                         </div>
                     </div>
                     <div class="about-image" ref="aboutImage">
-                        <img src="/images/pharmacy-interior.jpg" alt="Interior Apotek Tiarana Farma">
+                        <div class="image-container"></div>
                     </div>
                 </div>
             </section>
@@ -57,9 +57,7 @@
                 <h2 ref="servicesTitle">Layanan Kami</h2>
                 <div class="services-zigzag" ref="servicesContainer">
                     <div class="service-row service-card" ref="serviceRow1">
-                        <div class="service-image">
-                            <img src="/images/services/prescription.jpg" alt="Layanan Resep">
-                        </div>
+                        <div class="service-image service-image-resep"></div>
                         <div class="service-content">
                             <div class="service-icon">
                                 <i class="fas fa-prescription-bottle-alt"></i>
@@ -76,9 +74,7 @@
                     </div>
 
                     <div class="service-row service-card reverse">
-                        <div class="service-image">
-                            <img src="/images/services/consultation.jpg" alt="Konsultasi Kesehatan">
-                        </div>
+                        <div class="service-image service-image-konsultasi"></div>
                         <div class="service-content">
                             <div class="service-icon">
                                 <i class="fas fa-notes-medical"></i>
@@ -95,9 +91,7 @@
                     </div>
 
                     <div class="service-row service-card">
-                        <div class="service-image">
-                            <img src="/images/services/health-check.jpg" alt="Pemeriksaan Kesehatan">
-                        </div>
+                        <div class="service-image service-image-pemeriksaan"></div>
                         <div class="service-content">
                             <div class="service-icon">
                                 <i class="fas fa-heartbeat"></i>
