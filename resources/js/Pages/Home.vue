@@ -101,7 +101,7 @@
                             <ul>
                                 <li>Cek tekanan darah</li>
                                 <li>Pemeriksaan gula darah</li>
-                                <li>Pengukuran berat dan tinggi badan</li>
+                                <li>Pemeriksaan Kolestrol dan Asam Urat</li>
                                 <li>Konsultasi hasil pemeriksaan</li>
                             </ul>
                         </div>
