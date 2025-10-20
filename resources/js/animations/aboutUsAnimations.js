@@ -65,6 +65,7 @@ export const initializeAboutUsAnimations = () => {
         y: 30,
         ease: 'power3.out'
       }, '-=0.4');
+  }
 
   // Team section title animation
   gsap.from('.team-section h2', {
@@ -79,53 +80,42 @@ export const initializeAboutUsAnimations = () => {
     ease: 'back.out(1.7)'
   });
 
-  const teamMembers = document.querySelectorAll('.team-member');
-  gsap.from(teamMembers, {
+  // Pharmacist card reveal
+  gsap.from('.pharmacist-card', {
     scrollTrigger: {
-      trigger: '.team-grid',
-      start: 'top 70%',
+      trigger: '.pharmacist-card',
+      start: 'top 80%',
       toggleActions: 'play none none reverse'
     },
-    y: 100,
+    y: 60,
     opacity: 0,
     duration: 1,
-    stagger: {
-      each: 0.2,
-      ease: 'power3.out'
-    }
+    ease: 'power3.out'
   });
 
-  teamMembers.forEach(member => {
-    const image = member.querySelector('img');
-    const info = member.querySelectorAll('h3, p');
+  // Light stagger for values and stats
+  gsap.from('.values-section .value-card', {
+    scrollTrigger: {
+      trigger: '.values-section',
+      start: 'top 75%',
+      toggleActions: 'play none none reverse'
+    },
+    y: 40,
+    opacity: 0,
+    duration: 0.8,
+    stagger: { each: 0.15, ease: 'power3.out' }
+  });
 
-    member.addEventListener('mouseenter', () => {
-      gsap.to(image, {
-        scale: 1.1,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-      gsap.to(info, {
-        y: -5,
-        duration: 0.3,
-        stagger: 0.1,
-        ease: 'power2.out'
-      });
-    });
-
-    member.addEventListener('mouseleave', () => {
-      gsap.to(image, {
-        scale: 1,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-      gsap.to(info, {
-        y: 0,
-        duration: 0.3,
-        stagger: 0.1,
-        ease: 'power2.out'
-      });
-    });
+  gsap.from('.stats-section .stat-card', {
+    scrollTrigger: {
+      trigger: '.stats-section',
+      start: 'top 75%',
+      toggleActions: 'play none none reverse'
+    },
+    y: 40,
+    opacity: 0,
+    duration: 0.8,
+    stagger: { each: 0.15, ease: 'power3.out' }
   });
 
   // Location section animations
@@ -182,4 +172,3 @@ export const initializeAboutUsAnimations = () => {
     });
   });
 };
-}

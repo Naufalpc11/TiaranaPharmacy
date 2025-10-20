@@ -44,6 +44,22 @@
         padding: 20px;
     }
 
+    .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1rem;
+
+        .crumb {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+        }
+        .crumb:hover { text-decoration: underline; }
+        .divider { opacity: 0.7; }
+        .current { opacity: 1; font-weight: 600; }
+    }
+
     h1 {
         font-size: 4.5rem;
         font-weight: bold;
@@ -60,6 +76,39 @@
         line-height: 1.6;
         color: white;
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .cta-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1.25rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+            border: 2px solid transparent;
+
+            &.primary {
+                background: $primary-color;
+                color: $text-light;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            }
+
+            &.outline {
+                background: rgba(255,255,255,0.1);
+                color: $text-light;
+                border-color: rgba(255,255,255,0.6);
+            }
+
+            &:hover { transform: translateY(-2px); }
+            &:active { transform: translateY(0); }
+        }
     }
 }
 
@@ -81,6 +130,36 @@
             max-width: 800px;
             margin: 0 auto;
         }
+    }
+}
+
+.stats-section {
+    background-color: #fff;
+    @extend .full-height-section;
+
+    .stats-grid {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: $border-radius;
+        box-shadow: $box-shadow;
+        padding: 1.75rem 1.5rem;
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        i { color: $accent-color; font-size: 1.5rem; }
+        .value { font-size: 2rem; font-weight: 800; margin-top: 0.5rem; color: $primary-color; }
+        .label { color: #555; margin-top: 0.25rem; }
+
+        &:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
     }
 }
 
@@ -110,6 +189,44 @@
     }
 }
 
+.values-section {
+    background-color: #f8f9fa;
+    @extend .full-height-section;
+
+    .section-title {
+        text-align: center;
+        font-size: 2.25rem;
+        color: $primary-color;
+        margin-bottom: 2rem;
+        font-weight: 800;
+    }
+
+    .values-grid {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .value-card {
+        background: #fff;
+        border-radius: $border-radius;
+        box-shadow: $box-shadow;
+        padding: 1.75rem 1.5rem;
+        text-align: left;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        i { color: $accent-color; font-size: 1.5rem; }
+        h3 { margin: 0.75rem 0 0.25rem 0; color: $text-dark; font-size: 1.25rem; }
+        p { color: #666; margin: 0; line-height: 1.6; }
+
+        &:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
+    }
+}
+
 /* Dalam AboutUs.scss */
 .team-section {
     background-color: #fff;
@@ -119,9 +236,11 @@
 
     h2 {
         font-size: 3rem;
-        text-align: center;
+        text-align: left;
         color: $primary-color;
-        margin-bottom: 3rem;
+        margin: 0 auto 2rem auto;
+        max-width: 1200px;
+        padding: 0 2rem;
     }
 
     .team-grid {
@@ -226,6 +345,32 @@
             }
         }
     }
+
+    /* New pharmacist card layout */
+    .pharmacist-card {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        &:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(0,0,0,0.12); }
+
+        .photo { flex: 0 0 240px; display: flex; justify-content: center; align-items: center; }
+
+        .img-container { width: 220px; height: 220px; border-radius: 50%; overflow: hidden; background: #f0f2f5; display:flex; justify-content:center; align-items:center; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .info { flex: 1; }
+        h3 { font-size: 1.75rem; color: #111827; margin: 0 0 0.5rem 0; font-weight: 800; }
+        .role { color: #4b5563; margin-bottom: 1rem; }
+        .pharmacist-info p { margin: 0; color: #6b7280; font-size: 1rem; line-height: 1.7; }
+    }
 }
 
 .location-section {
@@ -306,6 +451,17 @@
     }
 }
 
+.visually-hidden {
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap; border: 0; padding: 0; margin: -1px;
+}
+
+.img-container.no-image {
+    background: linear-gradient(135deg, #eceff1 0%, #fafafa 100%);
+}
+
 // Responsive styles
 @media (max-width: 1200px) {
     .team-grid {
@@ -313,6 +469,9 @@
         gap: 2rem;
         padding: 0 1.5rem;
     }
+
+    .values-section .values-grid,
+    .stats-section .stats-grid { grid-template-columns: repeat(3, 1fr); }
 
     .team-member {
         .img-container {
@@ -376,6 +535,9 @@
         max-width: 400px;
         margin: 0 auto;
     }
+
+    .values-section .values-grid,
+    .stats-section .stats-grid { grid-template-columns: 1fr; }
 
     .team-member {
         .img-container {
