@@ -108,6 +108,16 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Partners -->
+            <PartnerLogos />
+
+            <!-- Articles highlight / CTA -->
+            <ArticleHighlight
+                :image="heroImage"
+                primaryHref="#"
+                secondaryHref="/about-us"
+            />
         </div>
     </MainLayout>
 </template>
@@ -116,6 +126,8 @@
 import { onMounted, ref } from 'vue';
 import MainLayout from '../Layouts/MainLayout.vue';
 import { initializeHomeAnimations } from '../animations/homeAnimations';
+import PartnerLogos from '../Components/PartnerLogos.vue';
+import ArticleHighlight from '../Components/ArticleHighlight.vue';
 
 // Refs for animations
 const heroContent = ref(null);
@@ -130,6 +142,8 @@ const aboutFeatures = ref(null);
 const servicesSection = ref(null);
 const servicesTitle = ref(null);
 const serviceRow1 = ref(null);
+// Use gradient fallback; wire image later if moved to /public/images
+const heroImage = null;
 
 onMounted(() => {
     // Initialize animations with refs
