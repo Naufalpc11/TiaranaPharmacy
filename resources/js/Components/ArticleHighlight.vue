@@ -218,6 +218,7 @@ const bgStyle = computed(() => {
   font-weight: 800;
   line-height: 1.08;
   background: linear-gradient(180deg, #0d19a3 0%, #2f3df5 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -285,3 +286,4 @@ const bgStyle = computed(() => {
   }
 }
 </style>
+
