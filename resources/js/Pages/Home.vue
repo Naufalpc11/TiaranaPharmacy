@@ -30,7 +30,7 @@
             <section class="about-section" id="tentang-kami" ref="aboutSection">
                 <div class="about-content">
                     <div class="about-text" ref="aboutText">
-                        <h2>Tentang Kami</h2>
+                        <h2 class="section-title">Tentang Kami</h2>
                         <p>Apotek Tiarana Farma telah melayani masyarakat sejak tahun 2021 dengan komitmen untuk menyediakan layanan kesehatan terbaik dan produk berkualitas. Dengan tim apoteker profesional, kami siap membantu Anda dengan konsultasi kesehatan dan informasi penggunaan obat yang tepat.</p>
                         <div class="about-features" ref="aboutFeatures">
                             <div class="about-feature">
@@ -54,7 +54,7 @@
             </section>
 
             <section class="services-section" ref="servicesSection">
-                <h2 ref="servicesTitle">Layanan Kami</h2>
+                <h2 class="section-title" ref="servicesTitle">Layanan Kami</h2>
                 <div class="services-zigzag" ref="servicesContainer">
                     <div class="service-row service-card" ref="serviceRow1">
                         <div class="service-image service-image-resep"></div>

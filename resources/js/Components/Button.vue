@@ -29,7 +29,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'danger', 'white'].includes(value),
+    validator: (value) => ['primary', 'danger', 'white', 'success'].includes(value),
   },
   href: {
     type: String,
@@ -152,6 +152,17 @@ const buttonClasses = computed(() => [
 .ui-button--white:hover:not(.is-disabled),
 .ui-button--white:focus-visible:not(.is-disabled) {
   background: rgba(255, 255, 255, 0.22);
+}
+
+.ui-button--success {
+  background: linear-gradient(135deg, #0b7a1d 0%, #27b033 100%);
+  color: #ffffff;
+}
+
+.ui-button--success:hover:not(.is-disabled),
+.ui-button--success:focus-visible:not(.is-disabled) {
+  box-shadow: 0 18px 32px rgba(11, 122, 29, 0.35);
+  transform: translateY(-1px);
 }
 
 .ui-button.is-disabled,
