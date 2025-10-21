@@ -3,9 +3,11 @@
         <div class="page-container">
             <section class="hero-bg-image full-viewport">
                 <div class="hero-overlay" ref="heroContent">
-                    <h1 class="home-title" ref="heroTitle">TIARANA FARMA</h1>
-                    <p class="home-subtitle" ref="heroSubtitle1">Melayani Dengan Sepenuh Hati</p>
-                    <p class="home-subtitle" ref="heroSubtitle2">Berdiri Sejak 2021</p>
+                    <div class="hero-overlay__inner">
+                        <h1 class="home-title" ref="heroTitle">TIARANA FARMA</h1>
+                        <p class="home-subtitle" ref="heroSubtitle1">Melayani Dengan Sepenuh Hati</p>
+                        <p class="home-subtitle" ref="heroSubtitle2">Berdiri Sejak 2021</p>
+                    </div>
                 </div>
             </section>
 
@@ -171,6 +173,5 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import '../../css/home.scss';
 </style>
-
 
 
