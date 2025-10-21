@@ -1,9 +1,10 @@
-<template>
+﻿<template>
     <header class="main-header" :class="{ 'scrolled': isScrolled }">
         <nav class="nav-shortcut">
             <ul>
                 <li><Link href="/" class="nav-link">Home</Link></li>
                 <li><Link href="/about-us" class="nav-link">Tentang Kami</Link></li>
+                <li><Link href="/artikel" class="nav-link">Artikel</Link></li>
                 <li><Link href="/contact" class="nav-link">Kontak</Link></li>
             </ul>
             <button class="chatbot-btn" disabled title="Segera hadir!">
@@ -131,3 +132,5 @@ onUnmounted(() => {
     }
 }
 </style>
+
+

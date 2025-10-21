@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <MainLayout>
         <div class="page-container">
             <section class="hero-bg-image full-viewport">
@@ -114,9 +114,12 @@
 
             <!-- Articles highlight / CTA -->
             <ArticleHighlight
-                :image="heroImage"
-                primaryHref="#"
-                secondaryHref="/about-us"
+                title="Amoksisilin: Kapan Perlu Kapan Tidak"
+                :excerpt="articleExcerpt"
+                date="12/08/2025"
+                :image="articleImage"
+                primaryHref="/artikel"
+                secondaryHref="/artikel"
             />
         </div>
     </MainLayout>
@@ -142,8 +145,9 @@ const aboutFeatures = ref(null);
 const servicesSection = ref(null);
 const servicesTitle = ref(null);
 const serviceRow1 = ref(null);
-// Use gradient fallback; wire image later if moved to /public/images
-const heroImage = null;
+// Article highlight uses gradient fallback until a dedicated image asset is supplied.
+const articleImage = null;
+const articleExcerpt = 'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.';
 
 onMounted(() => {
     // Initialize animations with refs
@@ -167,3 +171,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import '../../css/home.scss';
 </style>
+
+
+

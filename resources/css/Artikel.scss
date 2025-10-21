@@ -1,0 +1,59 @@
+﻿.artikel-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.artikel-header {
+  text-align: center;
+  margin: 1rem 0 2rem;
+
+  .breadcrumbs {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    color: #5c6bc0;
+
+    .crumb { color: #1a237e; text-decoration: none; }
+    .divider { opacity: .6; }
+    .current { color: #303f9f; font-weight: 600; }
+  }
+
+  h1 {
+    color: #1a237e;
+    margin: .5rem 0 0.5rem;
+  }
+
+  p {
+    color: #444;
+    margin: 0;
+  }
+}
+
+.artikel-list {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem 1rem 1.25rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+
+    h3 { margin: 0 0 .5rem; color: #1a237e; }
+    p { margin: 0 0 .75rem; color: #555; }
+
+    .read-more {
+      color: #1a237e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .artikel-container { padding: 1.25rem 1rem 2rem; }
+}

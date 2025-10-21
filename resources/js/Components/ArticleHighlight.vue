@@ -1,144 +1,287 @@
-<template>
-  <section class="articles-highlight">
+﻿<template>
+  <section class="articles-highlight" :class="{ 'is-visible': isVisible }" ref="sectionRef">
     <div class="articles-grid">
       <article class="highlight-card" :style="bgStyle">
-        <div class="overlay"></div>
+        <div class="media-overlay"></div>
         <div class="content">
-          <div class="meta">{{ date }}</div>
-          <h3>{{ title }}</h3>
-          <p>{{ excerpt }}</p>
-          <Link :href="primaryHref" class="btn-primary">
-            <i class="fa-solid fa-book-open"></i>
-            Baca Artikel
-          </Link>
+          <div class="card-date">{{ date }}</div>
+
+          <div class="text">
+            <h3>{{ title }}</h3>
+            <p>{{ excerpt }}</p>
+          </div>
+
+          <div class="card-actions">
+            <Button :href="primaryHref" size="lg">
+              Baca Artikel
+            </Button>
+            <div class="nav-controls">
+              <CircleButton disabled aria-label="Artikel sebelumnya">
+                <i class="fa-solid fa-arrow-left"></i>
+              </CircleButton>
+              <CircleButton disabled aria-label="Artikel selanjutnya">
+                <i class="fa-solid fa-arrow-right"></i>
+              </CircleButton>
+            </div>
+          </div>
         </div>
       </article>
+
       <aside class="cta">
-        <h2>Dapatkan Berita dan Artikel Terbaru</h2>
-        <Link :href="secondaryHref" class="btn-outline">
+        <div class="cta-heading">
+          <h2>
+            <span>Dapatkan</span>
+            <span>Berita dan</span>
+            <span>Artikel</span>
+            <span>Terbaru</span>
+          </h2>
+          <p>Jelajahi informasi kesehatan terkurasi langsung dari apoteker kami.</p>
+        </div>
+        <Button :href="secondaryHref" size="lg" icon-position="right">
           Selengkapnya
-          <i class="fa-solid fa-arrow-right"></i>
-        </Link>
+          <template #icon>
+            <i class="fa-solid fa-arrow-right"></i>
+          </template>
+        </Button>
       </aside>
     </div>
   </section>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import Button from './Button.vue'
+import CircleButton from './CircleButton.vue'
+
+const sectionRef = ref(null)
+const isVisible = ref(false)
+let observer = null
+
+onMounted(() => {
+  const el = sectionRef.value
+  if (!el) return
+
+  observer = new IntersectionObserver((entries) => {
+    const entry = entries[0]
+    if (entry && entry.isIntersecting) {
+      isVisible.value = true
+      if (observer) {
+        observer.disconnect()
+        observer = null
+      }
+    }
+  }, { threshold: 0.25 })
+
+  observer.observe(el)
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+})
 
 const props = defineProps({
   title: { type: String, default: 'Amoksisilin: Kapan Perlu Kapan Tidak' },
-  excerpt: { type: String, default: 'Ketahui kapan antibiotik benar-benar diperlukan, bagaimana penggunaannya yang aman, dan risiko resistensi bila digunakan tidak tepat.' },
+  excerpt: {
+    type: String,
+    default:
+      'Ketahui kapan antibiotik benar-benar diperlukan, bagaimana penggunaannya yang aman, dan risiko resistensi bila digunakan tidak tepat.',
+  },
   date: { type: String, default: '2025/09/26' },
   image: { type: String, default: null },
   primaryHref: { type: String, default: '#' },
   secondaryHref: { type: String, default: '#' },
 })
 
-const bgStyle = computed(() => ({
-  backgroundImage: props.image ? `url(${props.image})` : 'linear-gradient(135deg, #1a237e, #3949ab)'
-}))
+const bgStyle = computed(() => {
+  if (props.image) {
+    return {
+      backgroundImage: `url(${props.image})`,
+    }
+  }
+
+  return {
+    backgroundImage: 'linear-gradient(135deg, #1a237e, #3949ab)',
+  }
+})
 </script>
 
 <style scoped lang="scss">
 .articles-highlight {
-  max-width: 1400px;
-  margin: 0 auto 2rem;
-  padding: 2rem 1rem 3rem;
+  max-width: 1500px;
+  margin: 0 auto 4rem;
+  padding: 2.5rem 2rem 4rem;
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.articles-highlight.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .articles-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
+  grid-template-columns: minmax(0, 2.15fr) minmax(0, 1fr);
+  gap: 4rem;
+  align-items: center;
 }
 
 .highlight-card {
   position: relative;
-  min-height: 280px;
-  border-radius: 16px;
+  min-height: 440px;
+  border-radius: 36px;
   overflow: hidden;
   background-size: cover;
   background-position: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  background-repeat: no-repeat;
+  box-shadow: 0 26px 48px rgba(0, 0, 0, 0.22);
+}
 
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, rgba(0,0,0,.55), rgba(0,0,0,.35));
+.media-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.55));
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2rem;
+  padding: 3.25rem 3.25rem 2.75rem;
+  color: #ffffff;
+  height: 100%;
+}
+
+.card-date {
+  position: absolute;
+  top: 2.2rem;
+  right: 2.4rem;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.92;
+}
+
+.text {
+  max-width: 820px;
+  margin-top: 10rem;
+
+  h3 {
+    font-size: 2.4rem;
+    line-height: 1.2;
+    margin: 0 0 1rem;
+    font-weight: 700;
   }
 
-  .content {
-    position: relative;
-    color: #fff;
-    padding: 1.5rem 1.5rem 1.75rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    height: 100%;
-
-    .meta {
-      font-size: .85rem;
-      opacity: .85;
-      margin-bottom: .5rem;
-    }
-
-    h3 {
-      font-size: 1.5rem;
-      margin: 0 0 .5rem;
-    }
-
-    p {
-      margin: 0 0 1rem;
-      opacity: .95;
-      max-width: 60ch;
-    }
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    opacity: 0.9;
   }
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.nav-controls {
+  display: inline-flex;
+  gap: 0.75rem;
 }
 
 .cta {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-  padding: 2rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: center;
+  gap: 2.25rem;
+  text-align: right;
+  max-width: 360px;
+  margin: 0 auto;
+}
 
-  h2 {
-    color: #1a237e;
-    margin: 0 0 1rem;
+.cta-heading h2 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2.6rem, 2.4rem + 2vw, 4rem);
+  font-weight: 800;
+  line-height: 1.08;
+  background: linear-gradient(180deg, #0d19a3 0%, #2f3df5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cta-heading h2 span {
+  display: block;
+}
+
+.cta-heading p {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #384059;
+}
+
+.cta :deep(.ui-button) {
+  align-self: flex-end;
+}
+
+@media (max-width: 1024px) {
+  .articles-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .content {
+    padding: 2.5rem 2.25rem 2.5rem;
+  }
+
+  .cta {
+    align-items: center;
+    text-align: center;
+    max-width: none;
+  }
+
+  .cta :deep(.ui-button) {
+    align-self: center;
   }
 }
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  color: #fff;
-  background: #1a237e;
-  padding: .6rem 1rem;
-  border-radius: 10px;
-  text-decoration: none;
-}
+@media (max-width: 600px) {
+  .articles-highlight {
+    padding: 2rem 1.25rem 3.25rem;
+  }
 
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  color: #1a237e;
-  border: 2px solid #1a237e;
-  padding: .6rem 1rem;
-  border-radius: 10px;
-  text-decoration: none;
-}
+  .highlight-card {
+    min-height: 820px;
+    border-radius: 28px;
+  }
 
-@media (max-width: 900px) {
-  .articles-grid { grid-template-columns: 1fr; }
-  .cta { align-items: center; text-align: center; }
+  .content {
+    padding: 2.2rem 1.85rem 2.35rem;
+  }
+
+  .card-date {
+    top: 1.6rem;
+    right: 1.6rem;
+  }
+
+  .text h3 {
+    font-size: 1.85rem;
+  }
+
+  .text p {
+    font-size: 0.98rem;
+  }
 }
 </style>
-

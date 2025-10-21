@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,3 +17,9 @@ Route::get('/about-us', function () {
 Route::get('/contact', function () {
     return Inertia::render('Contact');
 });
+
+// Route untuk halaman Artikel
+Route::get('/artikel', function () {
+    return Inertia::render('Artikel');
+});
+
