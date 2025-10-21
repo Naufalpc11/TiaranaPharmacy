@@ -2,9 +2,9 @@
   <MainLayout>
     <div class="contact-page">
       <section class="contact-hero" aria-labelledby="contact-title">
-        <div class="contact-hero__overlay">
-          <h1 id="contact-title" class="home-title">Kontak</h1>
-          <p class="home-subtitle">
+        <div class="contact-hero__overlay" ref="contactHeroOverlay">
+          <h1 id="contact-title" class="home-title" ref="contactHeroTitle">Kontak</h1>
+          <p class="home-subtitle" ref="contactHeroSubtitle">
             Butuh bantuan cek ketersediaan obat atau konsultasi? Hubungi kami melalui WhatsApp atau isi formulir di
             bawah.
           </p>
@@ -12,7 +12,7 @@
       </section>
 
       <section class="contact-section" aria-labelledby="contact-form-title">
-        <div class="contact-form-card">
+        <div class="contact-form-card" ref="contactFormCard">
           <h2 id="contact-form-title" class="section-title contact-form__title">Kirim Pesan</h2>
           <form class="contact-form" @submit.prevent="submitForm">
             <div class="contact-form__grid">
@@ -70,10 +70,11 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import Button from '../Components/Button.vue'
 import InputField from '../Components/InputField.vue'
 import MainLayout from '../Layouts/MainLayout.vue'
+import { initializeContactAnimations } from '../animations/contactAnimations'
 
 const form = reactive({
   name: '',
@@ -82,9 +83,23 @@ const form = reactive({
   message: '',
 })
 
+const contactHeroOverlay = ref(null)
+const contactHeroTitle = ref(null)
+const contactHeroSubtitle = ref(null)
+const contactFormCard = ref(null)
+
 const submitForm = () => {
   // Placeholder for submission handler or integration.
 }
+
+onMounted(() => {
+  initializeContactAnimations({
+    heroOverlay: contactHeroOverlay.value,
+    heroTitle: contactHeroTitle.value,
+    heroSubtitle: contactHeroSubtitle.value,
+    formCard: contactFormCard.value,
+  })
+})
 </script>
 
 <style lang="scss" scoped>

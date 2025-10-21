@@ -2,12 +2,12 @@
   <MainLayout>
     <div class="artikel-page">
       <header class="artikel-hero" role="banner">
-        <div class="artikel-hero__overlay">
-          <h1 class="home-title">Artikel</h1>
-          <p class="home-subtitle">
+        <div class="artikel-hero__overlay" ref="artikelHeroOverlay">
+          <h1 class="home-title" ref="artikelHeroTitle">Artikel</h1>
+          <p class="home-subtitle" ref="artikelHeroSubtitle">
             Edukasi farmasi, tips kesehatan, info obat, pengumuman, dan promo terbaru dari Tiarana Farma.
           </p>
-          <label class="artikel-search" aria-label="Cari artikel">
+          <label class="artikel-search" aria-label="Cari artikel" ref="artikelSearchBar">
             <i class="fa-solid fa-magnifying-glass artikel-search__icon" aria-hidden="true"></i>
             <input
               type="search"
@@ -21,7 +21,7 @@
       </header>
 
       <section class="artikel-section" aria-label="Daftar Artikel">
-        <div class="artikel-grid">
+        <div class="artikel-grid" ref="artikelGrid">
           <ArticleCard
             v-for="article in filteredArticles"
             :key="article.id"
@@ -34,9 +34,10 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, onMounted } from 'vue'
 import ArticleCard from '../Components/ArticleCard.vue'
 import MainLayout from '../Layouts/MainLayout.vue'
+import { initializeArtikelAnimations } from '../animations/artikelAnimations'
 
 const articles = reactive([
   {
@@ -72,6 +73,11 @@ const articles = reactive([
 ])
 
 const query = ref('')
+const artikelHeroOverlay = ref(null)
+const artikelHeroTitle = ref(null)
+const artikelHeroSubtitle = ref(null)
+const artikelSearchBar = ref(null)
+const artikelGrid = ref(null)
 
 const filteredArticles = computed(() => {
   if (!query.value.trim()) {
@@ -84,6 +90,16 @@ const filteredArticles = computed(() => {
       article.title.toLowerCase().includes(keyword) ||
       article.excerpt.toLowerCase().includes(keyword)
   )
+})
+
+onMounted(() => {
+  initializeArtikelAnimations({
+    heroOverlay: artikelHeroOverlay.value,
+    heroTitle: artikelHeroTitle.value,
+    heroSubtitle: artikelHeroSubtitle.value,
+    searchBar: artikelSearchBar.value,
+    artikelGrid: artikelGrid.value,
+  })
 })
 </script>
 

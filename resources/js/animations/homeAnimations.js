@@ -18,17 +18,7 @@ export const initializeHomeAnimations = (refs) => {
     servicesTitle,
   } = refs;
 
-  // Hero section animation
-  gsap.set(heroContent, {
-    autoAlpha: 0,
-    scale: 0.9
-  });
-
-  gsap.set([heroTitle, heroSubtitle1, heroSubtitle2], {
-    autoAlpha: 0,
-    y: 30
-  });
-
+  // Hero section animation mirrors About Us hero sequence
   const heroTimeline = gsap.timeline({
     defaults: {
       ease: 'power3.out'
@@ -36,27 +26,26 @@ export const initializeHomeAnimations = (refs) => {
   });
 
   heroTimeline
-    .to(heroContent, {
-      autoAlpha: 1,
-      scale: 1,
-      duration: 1,
-      ease: 'power2.out'
+    .from(heroContent, {
+      autoAlpha: 0,
+      duration: 1.5
     })
-    .to(heroTitle, {
-      autoAlpha: 1,
-      y: 0,
-      duration: 0.8
-    }, '-=0.3')
-    .to(heroSubtitle1, {
-      autoAlpha: 1,
-      y: 0,
-      duration: 0.6
-    }, '-=0.4')
-    .to(heroSubtitle2, {
-      autoAlpha: 1,
-      y: 0,
-      duration: 0.6
-    }, '-=0.4');
+    .from(heroTitle, {
+      y: 100,
+      autoAlpha: 0,
+      duration: 1.2,
+      ease: 'power4.out'
+    }, '-=0.8')
+    .from(
+      [heroSubtitle1, heroSubtitle2].filter(Boolean),
+      {
+        y: 50,
+        autoAlpha: 0,
+        duration: 1,
+        stagger: 0.2
+      },
+      '-=0.7'
+    );
 
   // Features grid animation
   gsap.set(featuresGrid.children, {
