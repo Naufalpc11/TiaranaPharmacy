@@ -4,18 +4,18 @@
 .contact-page {
   background: #f6f8fc;
   min-height: 100vh;
-  padding-bottom: 4rem;
+  padding-bottom: 5rem;
 }
 
 .contact-hero {
   position: relative;
-  min-height: 440px;
+  min-height: 640px;
   display: flex;
   align-items: flex-end;
-  justify-content: center;
+  justify-content: flex-start;
   background:
     linear-gradient(180deg, rgba(0, 0, 0, .45), rgba(0, 0, 0, 0.65)),
-    url('../images/Hero-bg.jpg') center/cover no-repeat;
+    url('../images/HeroSection/Contact.jpg') center/cover no-repeat;
   color: #ffffff;
   overflow: hidden;
 
@@ -24,6 +24,7 @@
     padding: 4.5rem 0 3.5rem;
     display: grid;
     gap: 1rem;
+    margin-left: clamp(1.5rem, 6vw, 4rem);
   }
 
   .home-title {
@@ -90,17 +91,17 @@
 @media (max-width: 768px) {
   .contact-hero {
     align-items: center;
-    text-align: center;
 
     &__overlay {
       width: min(95vw, 700px);
       padding: 3.5rem 0;
-      text-align: center;
+      text-align: left;
+      margin-left: clamp(1rem, 4vw, 2.5rem);
     }
 
     .home-subtitle {
       max-width: 100%;
-      text-align: center;
+      text-align: left;
     }
   }
 

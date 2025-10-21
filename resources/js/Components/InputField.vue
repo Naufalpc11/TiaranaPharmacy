@@ -1,12 +1,5 @@
 <template>
-  <label
-    :for="id"
-    class="form-input"
-    :class="{
-      'form-input--textarea': isTextarea,
-      'form-input--disabled': disabled,
-    }"
-  >
+  <label :for="fieldId" :class="rootClasses">
     <span v-if="label" class="form-input__label">
       {{ label }}
       <span v-if="required" aria-hidden="true" class="form-input__required">*</span>
@@ -14,8 +7,7 @@
 
     <component
       :is="isTextarea ? 'textarea' : 'input'"
-      :id="id"
-      v-model="internalValue"
+      :id="fieldId"
       class="form-input__control"
       :type="isTextarea ? undefined : type"
       :placeholder="placeholder"
@@ -25,6 +17,10 @@
       :name="name"
       :aria-required="required ? 'true' : undefined"
       :aria-invalid="error ? 'true' : 'false'"
+      :value="stringifiedValue"
+      @input="handleInput"
+      @focus="forwardFocus"
+      @blur="forwardBlur"
       v-bind="$attrs"
     />
 
@@ -34,7 +30,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -91,14 +87,45 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'focus', 'blur', 'input'])
 
-const internalValue = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
+let autoId = 0
+const generateId = () => `input-field-${++autoId}`
+
+const internalId = ref(props.id ?? generateId())
+watch(
+  () => props.id,
+  (newId) => {
+    if (newId) {
+      internalId.value = newId
+    }
+  }
+)
 
 const isTextarea = computed(() => props.textarea || props.type === 'textarea')
+const fieldId = computed(() => internalId.value)
+const stringifiedValue = computed(() =>
+  props.modelValue === null || props.modelValue === undefined ? '' : String(props.modelValue)
+)
+
+const rootClasses = computed(() => ({
+  'form-input': true,
+  'form-input--textarea': isTextarea.value,
+  'form-input--disabled': props.disabled,
+  'form-input--error': Boolean(props.error),
+}))
+
+const handleInput = (event) => {
+  const rawValue = event.target.value
+  const nextValue =
+    props.type === 'number' && rawValue !== '' ? Number.isNaN(Number(rawValue)) ? rawValue : Number(rawValue) : rawValue
+
+  emit('update:modelValue', nextValue)
+  emit('input', event)
+}
+
+const forwardFocus = (event) => emit('focus', event)
+const forwardBlur = (event) => emit('blur', event)
 </script>
 
 <style scoped lang="scss">
@@ -167,5 +194,9 @@ const isTextarea = computed(() => props.textarea || props.type === 'textarea')
 .form-input--disabled {
   opacity: 0.7;
   pointer-events: none;
+}
+
+.form-input--error .form-input__control {
+  border-color: rgba(198, 40, 40, 0.6);
 }
 </style>
