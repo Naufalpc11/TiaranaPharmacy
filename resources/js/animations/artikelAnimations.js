@@ -80,6 +80,7 @@ export const initializeArtikelAnimations = (refs = {}) => {
           each: 0.15,
           from: 'start',
         },
+        clearProps: 'transform,opacity',
       });
     }
   }

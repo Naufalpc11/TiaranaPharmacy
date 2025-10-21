@@ -94,7 +94,7 @@ export const initializeAboutUsAnimations = () => {
   });
 
   // Light stagger for values and stats
-  gsap.from('.values-section .value-card', {
+  gsap.from('.values-section .mission-card', {
     scrollTrigger: {
       trigger: '.values-section',
       start: 'top 75%',
@@ -103,19 +103,21 @@ export const initializeAboutUsAnimations = () => {
     y: 40,
     opacity: 0,
     duration: 0.8,
-    stagger: { each: 0.15, ease: 'power3.out' }
+    stagger: { each: 0.15, ease: 'power3.out' },
+    clearProps: 'transform,opacity'
   });
 
-  gsap.from('.stats-section .stat-card', {
+  gsap.from('.history-stats .history-stat-card', {
     scrollTrigger: {
-      trigger: '.stats-section',
+      trigger: '.history-section',
       start: 'top 75%',
       toggleActions: 'play none none reverse'
     },
     y: 40,
     opacity: 0,
     duration: 0.8,
-    stagger: { each: 0.15, ease: 'power3.out' }
+    stagger: { each: 0.15, ease: 'power3.out' },
+    clearProps: 'transform,opacity'
   });
 
   // Location section animations

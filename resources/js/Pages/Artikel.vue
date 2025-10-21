@@ -22,11 +22,16 @@
 
       <section class="artikel-section" aria-label="Daftar Artikel">
         <div class="artikel-grid" ref="artikelGrid">
-          <ArticleCard
-            v-for="article in filteredArticles"
-            :key="article.id"
-            v-bind="article"
-          />
+          <template v-if="filteredArticles.length">
+            <ArticleCard
+              v-for="article in filteredArticles"
+              :key="article.id"
+              v-bind="article"
+            />
+          </template>
+          <p v-else class="artikel-empty" role="status">
+            tidak ada artikel terkait pencarian anda
+          </p>
         </div>
       </section>
     </div>

@@ -39,14 +39,12 @@
         <div class="section-container">
           <h2 id="misi" class="section-title">Misi</h2>
           <div class="values-grid">
-            <article
+            <MissionCard
               v-for="mission in missionItems"
               :key="mission.title"
-              class="value-card"
-            >
-              <h3>{{ mission.title }}</h3>
-              <p>{{ mission.description }}</p>
-            </article>
+              :title="mission.title"
+              :description="mission.description"
+            />
           </div>
         </div>
       </section>
@@ -66,14 +64,16 @@
 
             <div class="history-stats" aria-label="Statistik Singkat">
               <div class="stats-grid">
-                <div v-for="highlight in historyStats" :key="highlight.label" class="stat-card">
-                  <i :class="highlight.icon" aria-hidden="true" />
-                  <div class="value">{{ highlight.value }}</div>
-                  <div class="label">{{ highlight.label }}</div>
-                </div>
-              </div>
+                <HistoryStatCard
+                  v-for="highlight in historyStats"
+                  :key="highlight.label"
+                  :icon="highlight.icon"
+                  :value="highlight.value"
+                  :label="highlight.label"
+                />
             </div>
           </div>
+        </div>
             <div
                 class="history-media"
                 role="img">
@@ -175,6 +175,8 @@
 import { onMounted, ref } from 'vue'
 import { initializeAboutUsAnimations } from '../animations/aboutUsAnimations'
 import Button from '../Components/Button.vue'
+import MissionCard from '../Components/MissionCard.vue'
+import HistoryStatCard from '../Components/HistoryStatCard.vue'
 import MainLayout from '../Layouts/MainLayout.vue'
 
 const missionItems = [

@@ -103,32 +103,6 @@ background: #fff;
     }
   }
 
-  .value-card {
-    background: #fff;
-    border-radius: 22px;
-    padding: 2.25rem 2rem;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--line);
-    text-align: center;
-    min-height: 210px;
-    display: grid;
-    gap: 1.75rem;
-    align-items: start;
-
-    h3 {
-      font-size: 1.18rem;
-      font-weight: 700;
-      margin: 0;
-      color: #142873;
-    }
-
-    p {
-      margin: 0;
-      font-size: 1.02rem;
-      line-height: 1.6;
-      color: var(--muted);
-    }
-  }
 }
 
 /* ====== SEJARAH ====== */
@@ -179,32 +153,6 @@ background: #fff;
       }
     }
 
-        .stat-card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 1.35rem 1.45rem;
-      text-align: center;
-      align-items: center;
-      border: 1px solid var(--line);
-      box-shadow: 0 14px 34px rgba(19, 43, 133, 0.09);
-      display: grid;
-      gap: .6rem;
-
-      i {
-        width: 52px;
-        height: 52px;
-        border-radius: 16px;
-        background: rgba(47, 61, 245, 0.12);
-        display: grid;
-        place-items: center;
-        font-size: 1.5rem;
-        color: #1b3cc3;
-        margin: 0 auto;
-      }
-
-      .value { font-size: 1.32rem; font-weight: 700; color: #101c5d; }
-      .label { font-size: .95rem; color: #5c6789; }
-    }
   }
 
   .history-media {
@@ -415,15 +363,9 @@ background: #fff;
 
 @media (max-width: 560px) {
   .section-container { padding: 0 .9rem; }
-  .values-section .value-card { padding: 1.35rem; }
   .history-content { padding: 2rem 1.6rem; }
   .location-section .map-container iframe { min-height: 380px; }
 }
-
-
-
-
-
 
 
 
