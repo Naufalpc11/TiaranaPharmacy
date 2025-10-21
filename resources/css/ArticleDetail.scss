@@ -135,6 +135,41 @@
   padding-left: 1.6rem;
 }
 
+.article-detail-missing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 1.5rem;
+}
+
+.article-detail-missing__card {
+  max-width: 560px;
+  text-align: center;
+  background: #ffffff;
+  padding: 3rem 2.5rem;
+  border-radius: 28px;
+  box-shadow: 0 28px 60px rgba(10, 16, 54, 0.12);
+  display: grid;
+  gap: 1.2rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #111a4b;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #3a4764;
+    line-height: 1.7;
+  }
+
+  .article-detail-back {
+    margin: 0 auto;
+  }
+}
+
 @media (max-width: 768px) {
   .article-detail-hero {
     padding: 7rem 0 4rem;
@@ -159,5 +194,9 @@
   .article-detail-paragraph,
   .article-detail-list {
     font-size: 1rem;
+  }
+
+  .article-detail-missing__card {
+    padding: 2.5rem 1.8rem;
   }
 }
