@@ -1,42 +1,90 @@
-﻿<template>
-    <MainLayout>
-        <div class="artikel-container">
-            <header class="artikel-header" role="banner">
-                <nav class="breadcrumbs" aria-label="Breadcrumb">
-                    <Link href="/" class="crumb">Beranda</Link>
-                    <span class="divider" aria-hidden="true">/</span>
-                    <span class="current" aria-current="page">Artikel</span>
-                </nav>
-                <h1>Artikel</h1>
-                <p>Kumpulan artikel, tips kesehatan, dan informasi obat dari Tiarana Farma.</p>
-            </header>
-
-            <section class="artikel-list" aria-label="Daftar Artikel">
-                <div class="grid">
-                    <article class="card">
-                        <h3>Amoksisilin: Kapan Perlu Kapan Tidak</h3>
-                        <p>Ketahui kapan antibiotik benar-benar diperlukan dan risikonya bila tidak tepat.</p>
-                        <a class="read-more" href="#">Baca selengkapnya</a>
-                    </article>
-                    <article class="card">
-                        <h3>Tips Menyimpan Obat di Rumah</h3>
-                        <p>Panduan singkat menyimpan obat agar kualitasnya tetap terjaga.</p>
-                        <a class="read-more" href="#">Baca selengkapnya</a>
-                    </article>
-                    <article class="card">
-                        <h3>Kenali Interaksi Obat Umum</h3>
-                        <p>Beberapa kombinasi obat yang perlu dihindari untuk keamanan Anda.</p>
-                        <a class="read-more" href="#">Baca selengkapnya</a>
-                    </article>
-                </div>
-            </section>
+<template>
+  <MainLayout>
+    <div class="artikel-page">
+      <header class="artikel-hero" role="banner">
+        <div class="artikel-hero__overlay">
+          <h1 class="home-title">Artikel</h1>
+          <p class="home-subtitle">
+            Edukasi farmasi, tips kesehatan, info obat, pengumuman, dan promo terbaru dari Tiarana Farma.
+          </p>
+          <label class="artikel-search" aria-label="Cari artikel">
+            <i class="fa-solid fa-magnifying-glass artikel-search__icon" aria-hidden="true"></i>
+            <input
+              type="search"
+              placeholder="Cari artikel..."
+              autocomplete="off"
+              class="artikel-search__input"
+              v-model="query"
+            />
+          </label>
         </div>
-    </MainLayout>
+      </header>
+
+      <section class="artikel-section" aria-label="Daftar Artikel">
+        <div class="artikel-grid">
+          <ArticleCard
+            v-for="article in filteredArticles"
+            :key="article.id"
+            v-bind="article"
+          />
+        </div>
+      </section>
+    </div>
+  </MainLayout>
 </template>
 
 <script setup>
-import MainLayout from '../Layouts/MainLayout.vue';
-import { Link } from '@inertiajs/vue3';
+import { computed, reactive, ref } from 'vue'
+import ArticleCard from '../Components/ArticleCard.vue'
+import MainLayout from '../Layouts/MainLayout.vue'
+
+const articles = reactive([
+  {
+    id: 1,
+    title: 'Panduan Swamedikasi yang Aman',
+    excerpt:
+      '5 langkah sederhana agar penggunaan obat bebas tetap aman: baca etiket, dosis tepat, cek interaksi, batasi durasi, dan konsultasi bila gejala tak membaik.',
+    date: '11/08/2025',
+    datetime: '2025-08-11',
+    image: '/images/articles/swamedikasi.jpg',
+    imageAlt: 'Seseorang menuang obat tablet ke tangan',
+  },
+  {
+    id: 2,
+    title: 'Cara Menyimpan Obat yang Benar di Iklim Tropis',
+    excerpt:
+      'Panas dan lembap bisa merusak obat. Simpan pada suhu yang dianjurkan, hindari kamar mandi/dapur, dan gunakan kotak obat tertutup.',
+    date: '13/08/2025',
+    datetime: '2025-08-13',
+    image: '/images/WhatsApp Image 2024-07-29 at 20.05.38_c14c7704.jpg',
+    imageAlt: 'Rak apotek dengan berbagai produk obat',
+  },
+  {
+    id: 3,
+    title: 'Amoksisilin: Kapan Perlu, Kapan Tidak',
+    excerpt:
+      'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.',
+    date: '12/08/2025',
+    datetime: '2025-08-12',
+    image: '/images/articles/amoksisilin.jpg',
+    imageAlt: 'Strip kapsul antibiotik amoksisilin',
+  },
+])
+
+const query = ref('')
+
+const filteredArticles = computed(() => {
+  if (!query.value.trim()) {
+    return articles
+  }
+
+  const keyword = query.value.trim().toLowerCase()
+  return articles.filter(
+    (article) =>
+      article.title.toLowerCase().includes(keyword) ||
+      article.excerpt.toLowerCase().includes(keyword)
+  )
+})
 </script>
 
 <style lang="scss" scoped>

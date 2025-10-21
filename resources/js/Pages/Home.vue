@@ -127,10 +127,10 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import MainLayout from '../Layouts/MainLayout.vue';
 import { initializeHomeAnimations } from '../animations/homeAnimations';
-import PartnerLogos from '../Components/PartnerLogos.vue';
 import ArticleHighlight from '../Components/ArticleHighlight.vue';
+import PartnerLogos from '../Components/PartnerLogos.vue';
+import MainLayout from '../Layouts/MainLayout.vue';
 
 // Refs for animations
 const heroContent = ref(null);

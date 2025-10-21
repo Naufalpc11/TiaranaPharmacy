@@ -22,8 +22,8 @@
 </template>
 
 <script setup>
-import { computed, useSlots } from 'vue'
 import { Link } from '@inertiajs/vue3'
+import { computed, useSlots } from 'vue'
 
 const props = defineProps({
   variant: {
