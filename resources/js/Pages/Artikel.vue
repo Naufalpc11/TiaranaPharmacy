@@ -69,6 +69,7 @@ const articles = reactive([
     datetime: '2025-08-12',
     image: '/images/articles/amoksisilin.jpg',
     imageAlt: 'Strip kapsul antibiotik amoksisilin',
+    href: '/artikel/amoksisilin-kapan-perlu-kapan-tidak',
   },
 ])
 
