@@ -44,6 +44,8 @@ import ArticleCard from '../Components/ArticleCard.vue'
 import MainLayout from '../Layouts/MainLayout.vue'
 import { initializeArtikelAnimations } from '../animations/artikelAnimations'
 
+const asset = (path) => new URL(path, import.meta.url).href
+
 const articles = reactive([
   {
     id: 1,
@@ -52,7 +54,7 @@ const articles = reactive([
       '5 langkah sederhana agar penggunaan obat bebas tetap aman: baca etiket, dosis tepat, cek interaksi, batasi durasi, dan konsultasi bila gejala tak membaik.',
     date: '11/08/2025',
     datetime: '2025-08-11',
-    image: '/images/articles/swamedikasi.jpg',
+    image: asset('../../images/articles/swamedikasi.jpg'),
     imageAlt: 'Seseorang menuang obat tablet ke tangan',
   },
   {
@@ -62,7 +64,7 @@ const articles = reactive([
       'Panas dan lembap bisa merusak obat. Simpan pada suhu yang dianjurkan, hindari kamar mandi/dapur, dan gunakan kotak obat tertutup.',
     date: '13/08/2025',
     datetime: '2025-08-13',
-    image: '/images/WhatsApp Image 2024-07-29 at 20.05.38_c14c7704.jpg',
+    image: asset('../../images/WhatsApp Image 2024-07-29 at 20.05.38_c14c7704.jpg'),
     imageAlt: 'Rak apotek dengan berbagai produk obat',
   },
   {
@@ -72,7 +74,7 @@ const articles = reactive([
       'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.',
     date: '12/08/2025',
     datetime: '2025-08-12',
-    image: '/images/articles/amoksisilin.jpg',
+    image: asset('../../images/articles/amoksisilin.jpg'),
     imageAlt: 'Strip kapsul antibiotik amoksisilin',
     href: '/artikel/amoksisilin-kapan-perlu-kapan-tidak',
   },

@@ -136,7 +136,7 @@ export const initializeAboutUsAnimations = () => {
       duration: 0.8,
       ease: 'back.out(1.7)'
     })
-    .from('.contact-item', {
+    .from('.contact-info-card', {
       x: -50,
       opacity: 0,
       duration: 0.8,
@@ -153,7 +153,7 @@ export const initializeAboutUsAnimations = () => {
     }, '-=0.6');
 
   // Add hover effect for contact items
-  const contactItems = document.querySelectorAll('.contact-item');
+  const contactItems = document.querySelectorAll('.contact-info-card');
   contactItems.forEach(item => {
     item.addEventListener('mouseenter', () => {
       gsap.to(item, {

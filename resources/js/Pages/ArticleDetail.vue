@@ -121,11 +121,13 @@ const heroTitle = ref(null)
 const heroDate = ref(null)
 const contentCard = ref(null)
 
+const asset = (path) => new URL(path, import.meta.url).href
+
 const articles = {
   'amoksisilin-kapan-perlu-kapan-tidak': {
     title: 'Amoksisilin: Kapan Perlu, Kapan Tidak',
     date: '2025-08-12',
-    heroImage: '/images/articles/amoksisilin.jpg',
+    heroImage: asset('../../images/articles/amoksisilin.jpg'),
     introduction: [
       'Amoksisilin adalah antibiotik golongan penisilin yang efektif melawan banyak infeksi bakteri. Tapi - dan ini penting - antibiotik tidak bekerja untuk penyakit yang disebabkan virus seperti flu, pilek, atau sebagian besar sakit tenggorokan. Menggunakan antibiotik saat tidak perlu tidak akan mempercepat sembuh dan justru bisa menimbulkan efek samping serta mempercepat terjadinya resistensi antibiotik.',
     ],
