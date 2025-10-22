@@ -3,45 +3,43 @@
 
 /* ====== TOKENS (agar konsisten dengan mockup) ====== */
 :root {
-  --container: 1400px;         /* mengikuti lebar konten halaman Home */
-  --radius-lg: 24px;
-  --radius-xl: 28px;
-  --shadow-soft: 0 16px 40px rgba(15, 30, 80, 0.08);
-  --shadow-card: 0 18px 45px rgba(19, 43, 133, 0.10);
-  --brand: #132b85;            /* judul biru */
-  --ink: #1f2a44;              /* teks utama */
-  --muted: #3b4861;            /* body */
-  --line: rgba(19, 43, 133, 0.08);
+    --container: 1100px;
+    --radius-xl: 28px;
+    --shadow-soft: 0 16px 40px rgba(15, 30, 80, 0.08);
+    --shadow-card: 0 18px 45px rgba(19, 43, 133, 0.10);
+    --brand: #132b85
+    --ink: #1f2a44;
+    --muted: #3b4861;
+    --line: rgba(19, 43, 133, 0.08);
 }
 
 .about-page {
-  background: #eef2fb;
-  color: var(--ink);
+    background: #eef2fb;
+    color: var(--ink);
 }
 
-/* ====== LAYOUT ====== */
 .section-container {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 2.5rem;
+    width: 95%;
+    width: min(100%, 1400px);
+    margin: 0 auto;
+    padding: 0 1.75rem;
 }
 
 .section-title {
-  color: var(--brand);
-  margin: 0 0 1.25rem;
-  text-align: center;
+    color: var(--brand);
+    margin: 0 0 1.25rem;
+    text-align: center;
 }
 
-/* ====== HERO ====== */
 .about-header {
-  position: relative;
-  min-height: 100vh; /* lebih pendek dari 95vh agar seperti mockup */
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.75)),
-    url('../images/Interior.jpg') center/cover no-repeat;
-  display: grid;
-  place-items: center;
-  padding: 4rem 2rem;
+    position: relative;
+    min-height: 100vh;
+    background:
+        linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.75)),
+        url('../images/Interior.jpg') center/cover no-repeat;
+    display: grid;
+    place-items: center;
+    padding: 4rem 2rem;
 
   .about-header-overlay {
     width: min(960px, 90vw);
@@ -69,7 +67,6 @@
   }
 }
 
-/* ====== VISI ====== */
 .vision-section {
   padding: 4.5rem 0 3rem;
     background: #fff;
@@ -86,7 +83,6 @@
   }
 }
 
-/* ====== MISI ====== */
 .values-section {
   padding: 1.5rem 0 4.75rem;
 background: #fff;
@@ -98,14 +94,13 @@ background: #fff;
     @media (max-width: 900px) {
       grid-template-columns: repeat(2, 1fr);
     }
-    @media (max-width: 620px) {
+    @media (max-width: 768px) {
       grid-template-columns: 1fr;
     }
   }
 
 }
 
-/* ====== SEJARAH ====== */
 .history-section {
   padding: 4.75rem 0;
 
@@ -349,7 +344,7 @@ background: #fff;
 }
 
 @media (max-width: 992px) {
-  .section-container { padding: 0 2rem; }
+  .section-container { padding: 0 1.5rem; }
   .about-header { min-height: 64vh; }
   .team-section .pharmacist-card { padding: 2rem; }
 }
@@ -366,7 +361,5 @@ background: #fff;
   .history-content { padding: 2rem 1.6rem; }
   .location-section .map-container iframe { min-height: 380px; }
 }
-
-
 
 

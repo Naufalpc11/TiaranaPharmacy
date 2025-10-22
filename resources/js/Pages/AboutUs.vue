@@ -50,36 +50,38 @@
       </section>
 
       <!-- SEJARAH -->
-      <section class="history-section" aria-labelledby="sejarah">
-        <div class="section-container history-layout">
-          <div class="history-content">
-            <h2 id="sejarah" class="section-title">Sejarah Kami</h2>
-            <p>
-              Berdiri pada 2021 di Balikpapan, Tiarana Farma lahir dari misi sederhana: memudahkan akses obat
-              yang aman dan terjangkau. Dari sebuah apotek kecil kami bertumbuh menjadi layanan farmasi modern
-              yang mengedepankan konsultasi tatap muka, stok terkurasi, dan proses pembelian yang mudah.
-              Hingga kini, kami telah melayani lebih dari 5.000 pelanggan dan terus berinovasi demi kesehatan
-              keluarga Indonesia.
-            </p>
+        <section class="history-section" aria-labelledby="sejarah">
+        <div class="section-container">
+            <div class="history-layout">
+            <div class="history-content">
+                <h2 id="sejarah" class="section-title">Sejarah Kami</h2>
+                <p>
+                Berdiri pada 2021 di Balikpapan, Tiarana Farma lahir dari misi sederhana: memudahkan akses obat
+                yang aman dan terjangkau. Dari sebuah apotek kecil kami bertumbuh menjadi layanan farmasi modern
+                yang mengedepankan konsultasi tatap muka, stok terkurasi, dan proses pembelian yang mudah.
+                Hingga kini, kami telah melayani lebih dari 5.000 pelanggan dan terus berinovasi demi kesehatan
+                keluarga Indonesia.
+                </p>
 
-            <div class="history-stats" aria-label="Statistik Singkat">
-              <div class="stats-grid">
-                <HistoryStatCard
-                  v-for="highlight in historyStats"
-                  :key="highlight.label"
-                  :icon="highlight.icon"
-                  :value="highlight.value"
-                  :label="highlight.label"
-                />
+                <div class="history-stats" aria-label="Statistik Singkat">
+                <div class="stats-grid">
+                    <HistoryStatCard
+                    v-for="highlight in historyStats"
+                    :key="highlight.label"
+                    :icon="highlight.icon"
+                    :value="highlight.value"
+                    :label="highlight.label"
+                    />
+                </div>
+                </div>
             </div>
-          </div>
-        </div>
-            <div
-                class="history-media"
-                role="img">
+
+            <!-- WAJIB: tetap di dalam .history-layout sebagai kolom ke-2 -->
+            <div class="history-media" role="img" aria-label="Etalase apotek"></div>
             </div>
         </div>
-      </section>
+        </section>
+
 
       <section class="team-section" aria-labelledby="apoteker">
         <div class="section-container">
@@ -168,10 +170,10 @@
 import { onMounted, ref } from 'vue'
 import { initializeAboutUsAnimations } from '../animations/aboutUsAnimations'
 import Button from '../Components/Button.vue'
+import ContactInfoCard from '../Components/ContactInfoCard.vue'
+import HistoryStatCard from '../Components/HistoryStatCard.vue'
 import MissionCard from '../Components/MissionCard.vue'
 import MainLayout from '../Layouts/MainLayout.vue'
-import HistoryStatCard from '../Components/HistoryStatCard.vue'
-import ContactInfoCard from '../Components/ContactInfoCard.vue'
 
 const missionItems = [
   {

@@ -84,8 +84,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.9rem;
-  justify-content: start;
-  justify-items: start;
+  justify-content: center;
+  justify-items: center;
 
   > * {
     width: min(100%, 360px);
