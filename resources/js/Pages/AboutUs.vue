@@ -137,22 +137,15 @@
             <h2 id="lokasi-title" class="section-title">Lokasi Kami</h2>
 
             <div class="contact-items">
-              <article v-for="contact in contactDetails" :key="contact.title" class="contact-item">
-                <div class="icon"><i :class="contact.icon" aria-hidden="true" /></div>
-                <div class="content">
-                  <h3>{{ contact.title }}</h3>
-                  <p v-for="line in contact.lines" :key="line">{{ line }}</p>
-                </div>
-                <button
-                  v-if="contact.copyText"
-                  type="button"
-                  class="copy-btn"
-                  :aria-label="`Salin ${contact.title}`"
-                  @click="copyContact(contact.copyText)"
-                >
-                  <i class="fa-regular fa-copy" aria-hidden="true" />
-                </button>
-              </article>
+              <ContactInfoCard
+                v-for="contact in contactDetails"
+                :key="contact.title"
+                :icon="contact.icon"
+                :title="contact.title"
+                :lines="contact.lines"
+                :copy-text="contact.copyText"
+                @copy="copyContact"
+              />
             </div>
           </div>
 
@@ -176,8 +169,9 @@ import { onMounted, ref } from 'vue'
 import { initializeAboutUsAnimations } from '../animations/aboutUsAnimations'
 import Button from '../Components/Button.vue'
 import MissionCard from '../Components/MissionCard.vue'
-import HistoryStatCard from '../Components/HistoryStatCard.vue'
 import MainLayout from '../Layouts/MainLayout.vue'
+import HistoryStatCard from '../Components/HistoryStatCard.vue'
+import ContactInfoCard from '../Components/ContactInfoCard.vue'
 
 const missionItems = [
   {
@@ -227,6 +221,8 @@ const contactDetails = [
   }
 ]
 
+const asset = (path) => new URL(path, import.meta.url).href
+
 const pharmacist = ref({
   name: 'apt. Titik Tresnowati, S. Si',
   role: 'Apoteker Penanggung Jawab',
@@ -234,7 +230,7 @@ const pharmacist = ref({
   sipa: '19880824/SIPA-XX/2023',
   schedule: 'Senin-Sabtu, 17.00-22.00 WITA',
   badges: ['STRA & SIPA terverifikasi', 'On-the-job pengalaman'],
-  photo: '/images/team/pharmacist1.jpg',
+  photo: asset('../../images/HeroSection/AboutUs.jpg'),
   alt: 'Foto Apoteker Penanggung Jawab'
 })
 

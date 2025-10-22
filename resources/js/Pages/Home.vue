@@ -10,21 +10,13 @@
             </section>
 
             <section class="features-grid" ref="featuresGrid">
-                <div class="feature-item">
-                    <i class="fas fa-pills"></i>
-                    <h3>Resep & Non-Resep</h3>
-                    <p>Layanan obat resep dan non-resep dengan konsultasi farmasi profesional</p>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-clock"></i>
-                    <h3>Jam Operasional</h3>
-                    <p>Buka setiap hari dari pukul 08:00 - 22:00 WITA</p>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <h3>Produk Terjamin</h3>
-                    <p>Keaslian dan kualitas produk terjamin dengan izin resmi BPOM</p>
-                </div>
+                <FeatureHighlightCard
+                    v-for="feature in featureHighlights"
+                    :key="feature.title"
+                    :icon="feature.icon"
+                    :title="feature.title"
+                    :description="feature.description"
+                />
             </section>
 
             <section class="about-section" id="tentang-kami" ref="aboutSection">
@@ -56,56 +48,17 @@
             <section class="services-section" ref="servicesSection">
                 <h2 class="section-title" ref="servicesTitle">Layanan Kami</h2>
                 <div class="services-zigzag" ref="servicesContainer">
-                    <div class="service-row service-card" ref="serviceRow1">
-                        <div class="service-image service-image-resep"></div>
-                        <div class="service-content">
-                            <div class="service-icon">
-                                <i class="fas fa-prescription-bottle-alt"></i>
-                            </div>
-                            <h3>Layanan Resep</h3>
-                            <p>Kami menyediakan layanan resep dokter dengan standar tinggi dan penuh ketelitian. Apoteker profesional kami akan memastikan setiap resep diproses dengan tepat dan aman, disertai dengan konsultasi mengenai penggunaan obat yang benar.</p>
-                            <ul>
-                                <li>Pelayanan resep dokter cepat dan akurat</li>
-                                <li>Konsultasi penggunaan obat dengan apoteker</li>
-                                <li>Pemeriksaan interaksi obat</li>
-                                <li>Informasi efek samping dan cara penggunaan</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="service-row service-card reverse">
-                        <div class="service-image service-image-konsultasi"></div>
-                        <div class="service-content">
-                            <div class="service-icon">
-                                <i class="fas fa-notes-medical"></i>
-                            </div>
-                            <h3>Konsultasi Kesehatan</h3>
-                            <p>Dapatkan konsultasi kesehatan gratis dengan apoteker berpengalaman kami. Kami siap membantu Anda dengan berbagai pertanyaan seputar kesehatan dan penggunaan obat yang tepat.</p>
-                            <ul>
-                                <li>Konsultasi gratis dengan apoteker</li>
-                                <li>Informasi penggunaan obat yang aman</li>
-                                <li>Pemeriksaan kesehatan dasar</li>
-                                <li>Edukasi kesehatan</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="service-row service-card">
-                        <div class="service-image service-image-pemeriksaan"></div>
-                        <div class="service-content">
-                            <div class="service-icon">
-                                <i class="fas fa-heartbeat"></i>
-                            </div>
-                            <h3>Pemeriksaan Kesehatan</h3>
-                            <p>Kami menyediakan layanan pemeriksaan kesehatan dasar untuk membantu Anda memantau kondisi kesehatan secara rutin. Dengan peralatan modern dan tenaga terlatih, kami siap memberikan pelayanan terbaik.</p>
-                            <ul>
-                                <li>Cek tekanan darah</li>
-                                <li>Pemeriksaan gula darah</li>
-                                <li>Pemeriksaan Kolestrol dan Asam Urat</li>
-                                <li>Konsultasi hasil pemeriksaan</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <ServiceCard
+                        v-for="(service, index) in services"
+                        :key="service.title"
+                        :title="service.title"
+                        :icon="service.icon"
+                        :description="service.description"
+                        :items="service.items"
+                        :image-class="service.imageClass"
+                        :reverse="service.reverse"
+                        :ref="index === 0 ? setServiceRow1 : null"
+                    />
                 </div>
             </section>
 
@@ -129,7 +82,9 @@
 import { onMounted, ref } from 'vue';
 import { initializeHomeAnimations } from '../animations/homeAnimations';
 import ArticleHighlight from '../Components/ArticleHighlight.vue';
+import FeatureHighlightCard from '../Components/FeatureHighlightCard.vue';
 import PartnerLogos from '../Components/PartnerLogos.vue';
+import ServiceCard from '../Components/ServiceCard.vue';
 import MainLayout from '../Layouts/MainLayout.vue';
 
 // Refs for animations
@@ -138,6 +93,23 @@ const heroTitle = ref(null);
 const heroSubtitle1 = ref(null);
 const heroSubtitle2 = ref(null);
 const featuresGrid = ref(null);
+const featureHighlights = [
+    {
+        icon: 'fas fa-pills',
+        title: 'Resep & Non-Resep',
+        description: 'Layanan obat resep dan non-resep dengan konsultasi farmasi profesional'
+    },
+    {
+        icon: 'fas fa-clock',
+        title: 'Jam Operasional',
+        description: 'Buka setiap hari dari pukul 08:00 - 22:00 WITA'
+    },
+    {
+        icon: 'fas fa-shield-alt',
+        title: 'Produk Terjamin',
+        description: 'Keaslian dan kualitas produk terjamin dengan izin resmi BPOM'
+    }
+];
 const aboutSection = ref(null);
 const aboutText = ref(null);
 const aboutImage = ref(null);
@@ -145,6 +117,56 @@ const aboutFeatures = ref(null);
 const servicesSection = ref(null);
 const servicesTitle = ref(null);
 const serviceRow1 = ref(null);
+const services = [
+    {
+        icon: 'fas fa-prescription-bottle-alt',
+        title: 'Layanan Resep',
+        description: 'Kami menyediakan layanan resep dokter dengan standar tinggi dan penuh ketelitian. Apoteker profesional kami akan memastikan setiap resep diproses dengan tepat dan aman, disertai dengan konsultasi mengenai penggunaan obat yang benar.',
+        items: [
+            'Pelayanan resep dokter cepat dan akurat',
+            'Konsultasi penggunaan obat dengan apoteker',
+            'Pemeriksaan interaksi obat',
+            'Informasi efek samping dan cara penggunaan'
+        ],
+        imageClass: 'service-image-resep',
+        reverse: false
+    },
+    {
+        icon: 'fas fa-notes-medical',
+        title: 'Konsultasi Kesehatan',
+        description: 'Dapatkan konsultasi kesehatan gratis dengan apoteker berpengalaman kami. Kami siap membantu Anda dengan berbagai pertanyaan seputar kesehatan dan penggunaan obat yang tepat.',
+        items: [
+            'Konsultasi gratis dengan apoteker',
+            'Informasi penggunaan obat yang aman',
+            'Pemeriksaan kesehatan dasar',
+            'Edukasi kesehatan'
+        ],
+        imageClass: 'service-image-konsultasi',
+        reverse: true
+    },
+    {
+        icon: 'fas fa-heartbeat',
+        title: 'Pemeriksaan Kesehatan',
+        description: 'Kami menyediakan layanan pemeriksaan kesehatan dasar untuk membantu Anda memantau kondisi kesehatan secara rutin. Dengan peralatan modern dan tenaga terlatih, kami siap memberikan pelayanan terbaik.',
+        items: [
+            'Cek tekanan darah',
+            'Pemeriksaan gula darah',
+            'Pemeriksaan Kolestrol dan Asam Urat',
+            'Konsultasi hasil pemeriksaan'
+        ],
+        imageClass: 'service-image-pemeriksaan',
+        reverse: false
+    }
+];
+
+const setServiceRow1 = (component) => {
+    if (!component) {
+        serviceRow1.value = null;
+        return;
+    }
+
+    serviceRow1.value = component.root?.value ?? component.$el ?? component;
+};
 // Article highlight uses gradient fallback until a dedicated image asset is supplied.
 const articleImage = null;
 const articleExcerpt = 'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.';
@@ -171,5 +193,3 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import '../../css/home.scss';
 </style>
-
-
