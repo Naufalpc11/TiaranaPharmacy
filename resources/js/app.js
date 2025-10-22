@@ -1,4 +1,4 @@
-import { createInertiaApp } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { createApp, h } from 'vue';
 import './bootstrap';
 import '/resources/css/app.scss';
@@ -27,4 +27,16 @@ createInertiaApp({
             .use(plugin)
             .mount(el);
     },
+});
+
+router.on('finish', (event) => {
+    const { visit } = event.detail;
+
+    if (!visit.completed || visit.preserveScroll) {
+        return;
+    }
+
+    requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
 });

@@ -1,7 +1,7 @@
 <template>
     <div class="layout-container">
         <Header />
-        <main class="main-content">
+        <main class="main-content" :key="$page.url">
             <slot />
         </main>
         <SiteFooter />
@@ -9,8 +9,24 @@
 </template>
 
 <script setup>
+import { computed, nextTick, watch } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import Header from '../Components/Header.vue';
 import SiteFooter from '../Components/SiteFooter.vue';
+
+const page = usePage();
+const currentUrl = computed(() => page.url);
+
+const resetScrollPosition = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+};
+
+watch(currentUrl, async () => {
+    await nextTick();
+    resetScrollPosition();
+});
 </script>
 
 <style lang="scss">
