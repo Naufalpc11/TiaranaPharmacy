@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import Button from '../Components/Button.vue'
 import InputField from '../Components/InputField.vue'
 import MainLayout from '../Layouts/MainLayout.vue'
