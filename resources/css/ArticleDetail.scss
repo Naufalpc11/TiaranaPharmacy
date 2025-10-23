@@ -98,6 +98,48 @@
   color: #324060;
 }
 
+.article-detail-body {
+  display: grid;
+  gap: 1.4rem;
+
+  p {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: #324060;
+  }
+
+  h2,
+  h3 {
+    margin: 0;
+    font-weight: 700;
+    color: #111a4b;
+  }
+
+  h2 {
+    font-size: clamp(1.35rem, 2vw, 1.6rem);
+  }
+
+  h3 {
+    font-size: clamp(1.2rem, 1.8vw, 1.4rem);
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding-left: 1.6rem;
+    display: grid;
+    gap: 0.8rem;
+    color: #324060;
+    font-size: 1.02rem;
+    line-height: 1.8;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+}
+
 .article-detail-section {
   display: grid;
   gap: 1.2rem;

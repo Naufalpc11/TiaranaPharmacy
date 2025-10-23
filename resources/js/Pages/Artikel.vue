@@ -39,46 +39,30 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import ArticleCard from '../Components/ArticleCard.vue'
 import MainLayout from '../Layouts/MainLayout.vue'
 import { initializeArtikelAnimations } from '../animations/artikelAnimations'
 
-const asset = (path) => new URL(path, import.meta.url).href
+const props = defineProps({
+  articles: {
+    type: Array,
+    default: () => [],
+  },
+})
 
-const articles = reactive([
-  {
-    id: 1,
-    title: 'Panduan Swamedikasi yang Aman',
-    excerpt:
-      '5 langkah sederhana agar penggunaan obat bebas tetap aman: baca etiket, dosis tepat, cek interaksi, batasi durasi, dan konsultasi bila gejala tak membaik.',
-    date: '11/08/2025',
-    datetime: '2025-08-11',
-    image: asset('../../images/articles/swamedikasi.jpg'),
-    imageAlt: 'Seseorang menuang obat tablet ke tangan',
-  },
-  {
-    id: 2,
-    title: 'Cara Menyimpan Obat yang Benar di Iklim Tropis',
-    excerpt:
-      'Panas dan lembap bisa merusak obat. Simpan pada suhu yang dianjurkan, hindari kamar mandi/dapur, dan gunakan kotak obat tertutup.',
-    date: '13/08/2025',
-    datetime: '2025-08-13',
-    image: asset('../../images/WhatsApp Image 2024-07-29 at 20.05.38_c14c7704.jpg'),
-    imageAlt: 'Rak apotek dengan berbagai produk obat',
-  },
-  {
-    id: 3,
-    title: 'Amoksisilin: Kapan Perlu, Kapan Tidak',
-    excerpt:
-      'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.',
-    date: '12/08/2025',
-    datetime: '2025-08-12',
-    image: asset('../../images/articles/amoksisilin.jpg'),
-    imageAlt: 'Strip kapsul antibiotik amoksisilin',
-    href: '/artikel/amoksisilin-kapan-perlu-kapan-tidak',
-  },
-])
+const fallbackImage = new URL('../../images/HeroSection/Article.jpg', import.meta.url).href
+
+const articles = computed(() =>
+  props.articles.map((article) => ({
+    ...article,
+    image: article.image || fallbackImage,
+    imageAlt: article.imageAlt || article.title,
+    date: article.date || formatDate(article.datetime),
+    datetime: article.datetime || article.date,
+    href: article.href || `/artikel/${article.slug}`,
+  }))
+)
 
 const query = ref('')
 const artikelHeroOverlay = ref(null)
@@ -88,17 +72,36 @@ const artikelSearchBar = ref(null)
 const artikelGrid = ref(null)
 
 const filteredArticles = computed(() => {
+  const list = articles.value
+
   if (!query.value.trim()) {
-    return articles
+    return list
   }
 
   const keyword = query.value.trim().toLowerCase()
-  return articles.filter(
-    (article) =>
-      article.title.toLowerCase().includes(keyword) ||
-      article.excerpt.toLowerCase().includes(keyword)
-  )
+  return list.filter((article) => {
+    const title = (article.title || '').toLowerCase()
+    const excerpt = (article.excerpt || '').toLowerCase()
+    return title.includes(keyword) || excerpt.includes(keyword)
+  })
 })
+
+function formatDate(input) {
+  if (!input) {
+    return ''
+  }
+
+  const date = new Date(input)
+  if (Number.isNaN(date.getTime())) {
+    return input
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(date)
+}
 
 onMounted(() => {
   initializeArtikelAnimations({
