@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Article extends Model
@@ -43,16 +44,28 @@ class Article extends Model
                 return null;
             }
 
-            if (Str::startsWith($this->cover_image, ['http://', 'https://', 'data:'])) {
-                return $this->cover_image;
-            }
-
-            return asset('storage/' . ltrim($this->cover_image, '/'));
+            return $this->toRelativeStorageUrl($this->cover_image);
         });
     }
 
     public function scopePublished($query)
     {
         return $query->whereNotNull('published_at')->where('published_at', '<=', now());
+    }
+
+    protected function toRelativeStorageUrl(string $path): string
+    {
+        if (Str::startsWith($path, ['http://', 'https://', 'data:'])) {
+            return $path;
+        }
+
+        $url = Storage::disk('public')->url($path);
+        $appUrl = rtrim(config('app.url') ?? '', '/');
+
+        if ($appUrl && Str::startsWith($url, $appUrl)) {
+            return Str::after($url, $appUrl) ?: '/';
+        }
+
+        return $url;
     }
 }

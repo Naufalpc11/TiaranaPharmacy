@@ -10,6 +10,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ArticleResource extends Resource
@@ -58,15 +59,29 @@ class ArticleResource extends Resource
                             ->label('Gambar Sampul')
                             ->image()
                             ->maxSize(10240)
-                            ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('4:3')
-                            ->imageResizeTargetWidth('1600')
-                            ->imageResizeTargetHeight('1200')
-                            ->directory('articles/covers')
                             ->disk('public')
-                            ->imageEditor()
+                            ->directory('articles/covers')
+                            ->visibility('public')
                             ->imagePreviewHeight('200')
-                            ->loadingIndicatorPosition('left')
+                            ->fetchFileInformation(false)
+                            ->getUploadedFileUsing(function ($component, string $file, string | array | null $storedFileNames): ?array {
+                                $storage = Storage::disk($component->getDiskName() ?? 'public');
+
+                                if (! $storage->exists($file)) {
+                                    return null;
+                                }
+
+                                $name = $component->isMultiple()
+                                    ? ($storedFileNames[$file] ?? basename($file))
+                                    : ($storedFileNames ?? basename($file));
+
+                                return [
+                                    'name' => $name,
+                                    'size' => max(1, (int) $storage->size($file)),
+                                    'type' => $storage->mimeType($file) ?? 'image/jpeg',
+                                    'url' => ArticleResource::relativeStorageUrl($storage->url($file)),
+                                ];
+                            })
                             ->rules(['image', 'mimes:jpg,jpeg,png,webp', 'max:10240'])
                             ->helperText('Format jpg/png/webp, maks 10 MB. Direkomendasikan rasio 4:3.'),
                         Forms\Components\DateTimePicker::make('published_at')
@@ -172,5 +187,16 @@ class ArticleResource extends Resource
             'create' => Pages\CreateArticle::route('/create'),
             'edit' => Pages\EditArticle::route('/{record}/edit'),
         ];
+    }
+
+    protected static function relativeStorageUrl(string $url): string
+    {
+        $appUrl = rtrim(config('app.url') ?? '', '/');
+
+        if ($appUrl && Str::startsWith($url, $appUrl)) {
+            return Str::after($url, $appUrl) ?: '/';
+        }
+
+        return $url;
     }
 }
