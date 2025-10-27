@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\Prunable;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Model;
 
 class ContactMessage extends Model

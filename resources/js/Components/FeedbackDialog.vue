@@ -1,6 +1,10 @@
 <template>
   <div class="feedback-dialog" :class="`feedback-dialog--${variant}`">
-    <div class="feedback-dialog__icon" aria-hidden="true">
+    <div
+      class="feedback-dialog__icon"
+      :class="`feedback-dialog__icon--${variant}`"
+      aria-hidden="true"
+    >
       <template v-if="variant === 'success'">
         <svg
           width="64"
@@ -26,14 +30,6 @@
           viewBox="0 0 640 640"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <circle
-            cx="320"
-            cy="320"
-            r="296"
-            fill="none"
-            stroke="#132B85"
-            stroke-width="32"
-          />
           <path
             fill="#132B85"
             d="M224 224C224 171 267 128 320 128C373 128 416 171 416 224C416 266.7 388.1 302.9 349.5 315.4C321.1 324.6 288 350.7 288 392V416C288 433.7 302.3 448 320 448C337.7 448 352 433.7 352 416V392C352 390.3 352.6 387.9 355.5 384.7C358.5 381.4 363.4 378.2 369.2 376.3C433.5 355.6 480 295.3 480 224C480 135.6 408.4 64 320 64C231.6 64 160 135.6 160 224C160 241.7 174.3 256 192 256C209.7 256 224 241.7 224 224zM320 576C342.1 576 360 558.1 360 536C360 513.9 342.1 496 320 496C297.9 496 280 513.9 280 536C280 558.1 297.9 576 320 576z"
@@ -120,6 +116,25 @@ defineEmits(['primary', 'secondary'])
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.feedback-dialog__icon--success {
+  width: 64px;
+  height: 64px;
+}
+
+.feedback-dialog__icon--confirm {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 3px solid rgba(19, 43, 133, 0.8);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.feedback-dialog__icon--confirm svg {
+  width: 64px;
+  height: 64px;
 }
 
 .feedback-dialog__content {
