@@ -1,25 +1,33 @@
-﻿<template>
+<template>
   <section class="articles-highlight" :class="{ 'is-visible': isVisible }" ref="sectionRef">
     <div class="articles-grid">
       <article class="highlight-card" :style="bgStyle">
         <div class="media-overlay"></div>
         <div class="content">
-          <div class="card-date">{{ date }}</div>
+          <div class="card-date">{{ displayDate }}</div>
 
           <div class="text">
-            <h3>{{ title }}</h3>
-            <p>{{ excerpt }}</p>
+            <h3>{{ displayTitle }}</h3>
+            <p>{{ displayExcerpt }}</p>
           </div>
 
           <div class="card-actions">
-            <Button :href="primaryHref" size="lg">
+            <Button :href="primaryArticleHref" size="lg">
               Baca Artikel
             </Button>
-            <div class="nav-controls">
-              <CircleButton disabled aria-label="Artikel sebelumnya">
+            <div class="nav-controls" v-if="showNavControls">
+              <CircleButton
+                :disabled="isPrevDisabled"
+                aria-label="Artikel sebelumnya"
+                @click="goPrev"
+              >
                 <i class="fa-solid fa-arrow-left"></i>
               </CircleButton>
-              <CircleButton disabled aria-label="Artikel selanjutnya">
+              <CircleButton
+                :disabled="isNextDisabled"
+                aria-label="Artikel selanjutnya"
+                @click="goNext"
+              >
                 <i class="fa-solid fa-arrow-right"></i>
               </CircleButton>
             </div>
@@ -49,7 +57,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import Button from './Button.vue'
 import CircleButton from './CircleButton.vue'
 
@@ -83,6 +91,10 @@ onUnmounted(() => {
 })
 
 const props = defineProps({
+  articles: {
+    type: Array,
+    default: () => [],
+  },
   title: { type: String, default: 'Amoksisilin: Kapan Perlu Kapan Tidak' },
   excerpt: {
     type: String,
@@ -95,10 +107,87 @@ const props = defineProps({
   secondaryHref: { type: String, default: '#' },
 })
 
-const bgStyle = computed(() => {
-  if (props.image) {
+const activeIndex = ref(0)
+const availableArticles = computed(() => props.articles ?? [])
+const hasArticles = computed(() => availableArticles.value.length > 0)
+
+watch(
+  () => availableArticles.value.length,
+  (length) => {
+    if (length === 0) {
+      activeIndex.value = 0
+      return
+    }
+
+    if (activeIndex.value >= length) {
+      activeIndex.value = length - 1
+    }
+
+    if (activeIndex.value < 0) {
+      activeIndex.value = 0
+    }
+  }
+)
+
+const currentArticle = computed(() => {
+  if (!hasArticles.value) {
     return {
-      backgroundImage: `url(${props.image})`,
+      title: props.title,
+      excerpt: props.excerpt,
+      published_at: props.date,
+      cover_image_url: props.image,
+      url: props.primaryHref,
+    }
+  }
+
+  return availableArticles.value[activeIndex.value] ?? availableArticles.value[0]
+})
+
+const displayTitle = computed(() => currentArticle.value?.title ?? props.title)
+const displayExcerpt = computed(() => currentArticle.value?.excerpt ?? props.excerpt)
+const displayDate = computed(() => currentArticle.value?.published_at ?? props.date)
+
+const primaryArticleHref = computed(() => {
+  if (hasArticles.value) {
+    const article = currentArticle.value
+    if (!article) {
+      return props.primaryHref
+    }
+
+    if (article.url) {
+      return article.url
+    }
+
+    if (article.slug) {
+      return `/artikel/${article.slug}`
+    }
+  }
+
+  return props.primaryHref
+})
+
+const showNavControls = computed(() => availableArticles.value.length > 1)
+const isPrevDisabled = computed(() => !showNavControls.value)
+const isNextDisabled = computed(() => !showNavControls.value)
+
+const goPrev = () => {
+  if (!showNavControls.value) return
+  const total = availableArticles.value.length
+  activeIndex.value = (activeIndex.value - 1 + total) % total
+}
+
+const goNext = () => {
+  if (!showNavControls.value) return
+  const total = availableArticles.value.length
+  activeIndex.value = (activeIndex.value + 1) % total
+}
+
+const bgStyle = computed(() => {
+  const coverImage = currentArticle.value?.cover_image_url ?? props.image
+
+  if (coverImage) {
+    return {
+      backgroundImage: `url(${coverImage})`,
     }
   }
 
@@ -126,37 +215,41 @@ const bgStyle = computed(() => {
 .articles-grid {
   display: grid;
   grid-template-columns: minmax(0, 2.15fr) minmax(0, 1fr);
-  gap: 4rem;
-  align-items: center;
+  gap: clamp(2.5rem, 3vw, 4rem);
+  align-items: stretch;
 }
 
 .highlight-card {
   position: relative;
-  min-height: 440px;
   border-radius: 36px;
   overflow: hidden;
+  min-height: 540px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  box-shadow: 0 26px 48px rgba(0, 0, 0, 0.22);
+  box-shadow:
+    0 28px 55px rgba(21, 31, 110, 0.33),
+    0 16px 32px rgba(21, 31, 110, 0.22);
+  display: flex;
 }
 
 .media-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.55));
+  background:
+    linear-gradient(135deg, rgba(10, 19, 94, 0.88), rgba(28, 53, 173, 0.72)),
+    rgba(6, 11, 56, 0.85);
 }
 
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  padding: clamp(2rem, 2rem + 1.6vw, 3rem) clamp(2rem, 2.2rem + 2vw, 3.5rem);
+  color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 2rem;
-  padding: 3.25rem 3.25rem 2.75rem;
-  color: #ffffff;
-  height: 100%;
+  justify-content: space-between;
+  flex: 1;
 }
 
 .card-date {
@@ -286,4 +379,3 @@ const bgStyle = computed(() => {
   }
 }
 </style>
-
