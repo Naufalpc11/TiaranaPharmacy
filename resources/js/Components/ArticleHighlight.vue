@@ -1,7 +1,15 @@
-<template>
+﻿<template>
   <section class="articles-highlight" :class="{ 'is-visible': isVisible }" ref="sectionRef">
     <div class="articles-grid">
-      <article class="highlight-card" :style="bgStyle">
+      <article class="highlight-card">
+        <transition-group name="highlight-image" tag="div" class="media-background-wrapper">
+          <div
+            v-for="layer in backgroundLayers"
+            :key="layer.key"
+            class="media-background"
+            :style="layer.style"
+          ></div>
+        </transition-group>
         <div class="media-overlay"></div>
         <div class="content">
           <div class="card-date">{{ displayDate }}</div>
@@ -64,6 +72,8 @@ import CircleButton from './CircleButton.vue'
 const sectionRef = ref(null)
 const isVisible = ref(false)
 let observer = null
+const backgroundLayers = ref([])
+const backgroundTimeout = ref(null)
 
 onMounted(() => {
   const el = sectionRef.value
@@ -87,6 +97,11 @@ onUnmounted(() => {
   if (observer) {
     observer.disconnect()
     observer = null
+  }
+
+  if (backgroundTimeout.value) {
+    clearTimeout(backgroundTimeout.value)
+    backgroundTimeout.value = null
   }
 })
 
@@ -143,6 +158,21 @@ const currentArticle = computed(() => {
   return availableArticles.value[activeIndex.value] ?? availableArticles.value[0]
 })
 
+const articleKey = computed(() => {
+  const article = currentArticle.value
+  if (!article) {
+    return `fallback-${activeIndex.value}`
+  }
+
+  return (
+    article.id ??
+    article.slug ??
+    (article.title ? article.title.toString() : `article-${activeIndex.value}`)
+  )
+})
+
+const backgroundKey = computed(() => `bg-${articleKey.value}`)
+
 const displayTitle = computed(() => currentArticle.value?.title ?? props.title)
 const displayExcerpt = computed(() => currentArticle.value?.excerpt ?? props.excerpt)
 const displayDate = computed(() => currentArticle.value?.published_at ?? props.date)
@@ -192,9 +222,34 @@ const bgStyle = computed(() => {
   }
 
   return {
-    backgroundImage: 'linear-gradient(135deg, #1a237e, #3949ab)',
+    backgroundColor: '#000',
+    backgroundImage: 'none',
   }
 })
+
+const applyBackgroundLayer = () => {
+  const style = { ...bgStyle.value }
+  const layerKey = `${backgroundKey.value}-${Date.now()}`
+
+  backgroundLayers.value = [...backgroundLayers.value.slice(-1), { key: layerKey, style }]
+
+  if (backgroundTimeout.value) {
+    clearTimeout(backgroundTimeout.value)
+  }
+
+  backgroundTimeout.value = setTimeout(() => {
+    backgroundLayers.value = backgroundLayers.value.slice(-1)
+    backgroundTimeout.value = null
+  }, 350)
+}
+
+watch(
+  () => backgroundKey.value,
+  () => {
+    applyBackgroundLayer()
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped lang="scss">
@@ -219,26 +274,53 @@ const bgStyle = computed(() => {
   align-items: stretch;
 }
 
+.media-background-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.highlight-image-enter-active,
+.highlight-image-leave-active {
+  transition: opacity 0.35s ease;
+}
+
+.highlight-image-enter-from,
+.highlight-image-leave-to {
+  opacity: 0;
+}
+
 .highlight-card {
   position: relative;
   border-radius: 36px;
   overflow: hidden;
   min-height: 540px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-color: #000;
   box-shadow:
     0 28px 55px rgba(21, 31, 110, 0.33),
     0 16px 32px rgba(21, 31, 110, 0.22);
   display: flex;
 }
 
+.media-background {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  background-color: #000;
+}
+
 .media-overlay {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(135deg, rgba(10, 19, 94, 0.88), rgba(28, 53, 173, 0.72)),
-    rgba(6, 11, 56, 0.85);
+    linear-gradient(135deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.52)),
+    rgba(0, 0, 0, 0.45);
+  z-index: 1;
 }
 
 .content {

@@ -67,25 +67,37 @@
 
             <!-- Articles highlight / CTA -->
             <ArticleHighlight
-                title="Amoksisilin: Kapan Perlu Kapan Tidak"
-                :excerpt="articleExcerpt"
-                date="12/08/2025"
-                :image="articleImage"
-                primaryHref="/artikel"
-                secondaryHref="/artikel"
+                :articles="latestArticles"
+                :title="highlightTitle"
+                :excerpt="highlightExcerpt"
+                :date="highlightDate"
+                :image="highlightImage"
+                :primary-href="highlightPrimaryHref"
+                :secondary-href="articlesIndexHref"
             />
         </div>
     </MainLayout>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { initializeHomeAnimations } from '../animations/homeAnimations';
 import ArticleHighlight from '../Components/ArticleHighlight.vue';
 import FeatureHighlightCard from '../Components/FeatureHighlightCard.vue';
 import PartnerLogos from '../Components/PartnerLogos.vue';
 import ServiceCard from '../Components/ServiceCard.vue';
 import MainLayout from '../Layouts/MainLayout.vue';
+
+const props = defineProps({
+    articles: {
+        type: Array,
+        default: () => [],
+    },
+    articlesIndexUrl: {
+        type: String,
+        default: '/artikel',
+    },
+});
 
 // Refs for animations
 const heroContent = ref(null);
@@ -167,9 +179,20 @@ const setServiceRow1 = (component) => {
 
     serviceRow1.value = component.root?.value ?? component.$el ?? component;
 };
-// Article highlight uses gradient fallback until a dedicated image asset is supplied.
-const articleImage = null;
-const articleExcerpt = 'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.';
+// Article highlight data
+const articleImageFallback = null;
+const articleExcerptFallback = 'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.';
+const articleTitleFallback = 'Amoksisilin: Kapan Perlu Kapan Tidak';
+const articleDateFallback = '12/08/2025';
+
+const latestArticles = computed(() => props.articles ?? []);
+const firstArticle = computed(() => latestArticles.value[0] ?? null);
+const highlightTitle = computed(() => firstArticle.value?.title ?? articleTitleFallback);
+const highlightExcerpt = computed(() => firstArticle.value?.excerpt ?? articleExcerptFallback);
+const highlightDate = computed(() => firstArticle.value?.published_at ?? articleDateFallback);
+const highlightImage = computed(() => firstArticle.value?.cover_image_url ?? articleImageFallback);
+const highlightPrimaryHref = computed(() => firstArticle.value?.url ?? props.articlesIndexUrl);
+const articlesIndexHref = computed(() => props.articlesIndexUrl ?? '/artikel');
 
 onMounted(() => {
     // Initialize animations with refs
