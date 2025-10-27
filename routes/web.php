@@ -1,6 +1,7 @@
 ﻿<?php
 
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ContactMessageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,6 +19,7 @@ Route::get('/about-us', function () {
 Route::get('/contact', function () {
     return Inertia::render('Contact');
 });
+Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
 
 // Route untuk halaman Artikel
 Route::get('/artikel', [ArticleController::class, 'index'])->name('articles.index');

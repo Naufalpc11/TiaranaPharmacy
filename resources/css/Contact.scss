@@ -78,6 +78,35 @@
   justify-content: flex-end;
 }
 
+.contact-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 25, 163, 0.25);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 5vw, 3rem);
+  z-index: 1200;
+  overflow-y: auto;
+}
+
+.contact-dialog__panel {
+  width: min(100%, 784px);
+  display: flex;
+  justify-content: center;
+}
+
+.contact-dialog-fade-enter-active,
+.contact-dialog-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.contact-dialog-fade-enter-from,
+.contact-dialog-fade-leave-to {
+  opacity: 0;
+}
+
 @media (max-width: 1024px) {
   .contact-form-card {
     padding: 2.5rem 2rem;
@@ -120,6 +149,10 @@
       width: 100%;
     }
   }
+
+  .contact-dialog-backdrop {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -129,5 +162,9 @@
 
   .contact-form-card {
     padding: 2rem 1.25rem;
+  }
+
+  .contact-dialog-backdrop {
+    padding: 1rem;
   }
 }
