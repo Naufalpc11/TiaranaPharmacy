@@ -3,12 +3,13 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactMessageController;
 use App\Models\Article;
+use App\Services\HomePageContentService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 // Route untuk halaman utama
-Route::get('/', function () {
+Route::get('/', function (HomePageContentService $homePageContentService) {
     $latestArticles = collect();
 
     try {
@@ -36,6 +37,7 @@ Route::get('/', function () {
     return Inertia::render('Home', [
         'articles' => $latestArticles,
         'articlesIndexUrl' => route('articles.index'),
+        'homeContent' => $homePageContentService->get(),
     ]);
 });
 

@@ -1,6 +1,6 @@
 <template>
     <div class="service-row service-card" :class="{ reverse }" ref="root">
-        <div class="service-image" :class="imageClass"></div>
+        <div class="service-image" :class="imageClass" :style="imageStyles"></div>
         <div class="service-content">
             <div class="service-icon">
                 <i :class="icon"></i>
@@ -15,9 +15,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     title: {
         type: String,
         required: true
@@ -36,12 +36,26 @@ defineProps({
     },
     imageClass: {
         type: String,
-        required: true
+        default: ''
+    },
+    imageUrl: {
+        type: String,
+        default: null
     },
     reverse: {
         type: Boolean,
         default: false
     }
+});
+
+const imageStyles = computed(() => {
+    if (!props.imageUrl) {
+        return {};
+    }
+
+    return {
+        backgroundImage: `url(${props.imageUrl})`,
+    };
 });
 
 const root = ref(null);

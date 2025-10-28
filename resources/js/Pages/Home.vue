@@ -1,11 +1,23 @@
 ﻿<template>
     <MainLayout>
         <div class="page-container">
-            <section class="hero-bg-image full-viewport">
+            <section class="hero-bg-image full-viewport" :style="heroBackgroundStyle">
                 <div class="hero-overlay" ref="heroContent">
-                    <h1 class="home-title" ref="heroTitle">TIARANA FARMA</h1>
-                    <p class="home-subtitle" ref="heroSubtitle1">Melayani Dengan Sepenuh Hati</p>
-                    <p class="home-subtitle" ref="heroSubtitle2">Berdiri Sejak 2021</p>
+                    <h1 class="home-title" ref="heroTitle">{{ hero.title }}</h1>
+                    <p
+                        v-if="hero.subtitlePrimary"
+                        class="home-subtitle"
+                        ref="heroSubtitle1"
+                    >
+                        {{ hero.subtitlePrimary }}
+                    </p>
+                    <p
+                        v-if="hero.subtitleSecondary"
+                        class="home-subtitle"
+                        ref="heroSubtitle2"
+                    >
+                        {{ hero.subtitleSecondary }}
+                    </p>
                 </div>
             </section>
 
@@ -22,25 +34,21 @@
             <section class="about-section" id="tentang-kami" ref="aboutSection">
                 <div class="about-content">
                     <div class="about-text" ref="aboutText">
-                        <h2 class="section-title">Tentang Kami</h2>
-                        <p>Apotek Tiarana Farma telah melayani masyarakat sejak tahun 2021 dengan komitmen untuk menyediakan layanan kesehatan terbaik dan produk berkualitas. Dengan tim apoteker profesional, kami siap membantu Anda dengan konsultasi kesehatan dan informasi penggunaan obat yang tepat.</p>
+                        <h2 class="section-title">{{ about.title }}</h2>
+                        <p>{{ about.description }}</p>
                         <div class="about-features" ref="aboutFeatures">
-                            <div class="about-feature">
-                                <i class="fas fa-certificate"></i>
-                                <h4>Apoteker Berpengalaman</h4>
-                            </div>
-                            <div class="about-feature">
-                                <i class="fas fa-check-circle"></i>
-                                <h4>Produk Berkualitas</h4>
-                            </div>
-                            <div class="about-feature">
-                                <i class="fas fa-heart"></i>
-                                <h4>Pelayanan Ramah</h4>
+                            <div
+                                v-for="feature in about.features"
+                                :key="feature.title"
+                                class="about-feature"
+                            >
+                                <i :class="feature.icon"></i>
+                                <h4>{{ feature.title }}</h4>
                             </div>
                         </div>
                     </div>
                     <div class="about-image" ref="aboutImage">
-                        <div class="image-container"></div>
+                        <div class="image-container" :style="aboutImageStyle"></div>
                     </div>
                 </div>
             </section>
@@ -56,6 +64,7 @@
                         :description="service.description"
                         :items="service.items"
                         :image-class="service.imageClass"
+                        :image-url="service.imageUrl"
                         :reverse="service.reverse"
                         :ref="index === 0 ? setServiceRow1 : null"
                     />
@@ -63,7 +72,7 @@
             </section>
 
             <!-- Partners -->
-            <PartnerLogos />
+            <PartnerLogos :logos="partnerLogos" />
 
             <!-- Articles highlight / CTA -->
             <ArticleHighlight
@@ -97,39 +106,56 @@ const props = defineProps({
         type: String,
         default: '/artikel',
     },
+    homeContent: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
-// Refs for animations
-const heroContent = ref(null);
-const heroTitle = ref(null);
-const heroSubtitle1 = ref(null);
-const heroSubtitle2 = ref(null);
-const featuresGrid = ref(null);
-const featureHighlights = [
+const defaultHero = {
+    title: 'TIARANA FARMA',
+    subtitlePrimary: 'Melayani Dengan Sepenuh Hati',
+    subtitleSecondary: 'Berdiri Sejak 2021',
+};
+
+const defaultFeatureHighlights = [
     {
         icon: 'fas fa-pills',
         title: 'Resep & Non-Resep',
-        description: 'Layanan obat resep dan non-resep dengan konsultasi farmasi profesional'
+        description: 'Layanan obat resep dan non-resep dengan konsultasi farmasi profesional',
     },
     {
         icon: 'fas fa-clock',
         title: 'Jam Operasional',
-        description: 'Buka setiap hari dari pukul 08:00 - 22:00 WITA'
+        description: 'Buka setiap hari dari pukul 08:00 - 22:00 WITA',
     },
     {
         icon: 'fas fa-shield-alt',
         title: 'Produk Terjamin',
-        description: 'Keaslian dan kualitas produk terjamin dengan izin resmi BPOM'
-    }
+        description: 'Keaslian dan kualitas produk terjamin dengan izin resmi BPOM',
+    },
 ];
-const aboutSection = ref(null);
-const aboutText = ref(null);
-const aboutImage = ref(null);
-const aboutFeatures = ref(null);
-const servicesSection = ref(null);
-const servicesTitle = ref(null);
-const serviceRow1 = ref(null);
-const services = [
+
+const defaultAbout = {
+    title: 'Tentang Kami',
+    description: 'Apotek Tiarana Farma telah melayani masyarakat sejak tahun 2021 dengan komitmen untuk menyediakan layanan kesehatan terbaik dan produk berkualitas. Dengan tim apoteker profesional, kami siap membantu Anda dengan konsultasi kesehatan dan informasi penggunaan obat yang tepat.',
+    features: [
+        {
+            icon: 'fas fa-certificate',
+            title: 'Apoteker Berpengalaman',
+        },
+        {
+            icon: 'fas fa-check-circle',
+            title: 'Produk Berkualitas',
+        },
+        {
+            icon: 'fas fa-heart',
+            title: 'Pelayanan Ramah',
+        },
+    ],
+};
+
+const defaultServices = [
     {
         icon: 'fas fa-prescription-bottle-alt',
         title: 'Layanan Resep',
@@ -138,10 +164,10 @@ const services = [
             'Pelayanan resep dokter cepat dan akurat',
             'Konsultasi penggunaan obat dengan apoteker',
             'Pemeriksaan interaksi obat',
-            'Informasi efek samping dan cara penggunaan'
+            'Informasi efek samping dan cara penggunaan',
         ],
         imageClass: 'service-image-resep',
-        reverse: false
+        reverse: false,
     },
     {
         icon: 'fas fa-notes-medical',
@@ -151,10 +177,10 @@ const services = [
             'Konsultasi gratis dengan apoteker',
             'Informasi penggunaan obat yang aman',
             'Pemeriksaan kesehatan dasar',
-            'Edukasi kesehatan'
+            'Edukasi kesehatan',
         ],
         imageClass: 'service-image-konsultasi',
-        reverse: true
+        reverse: true,
     },
     {
         icon: 'fas fa-heartbeat',
@@ -164,12 +190,133 @@ const services = [
             'Cek tekanan darah',
             'Pemeriksaan gula darah',
             'Pemeriksaan Kolestrol dan Asam Urat',
-            'Konsultasi hasil pemeriksaan'
+            'Konsultasi hasil pemeriksaan',
         ],
         imageClass: 'service-image-pemeriksaan',
-        reverse: false
-    }
+        reverse: false,
+    },
 ];
+
+const homeContent = computed(() => props.homeContent ?? {});
+
+const hero = computed(() => {
+    const heroContent = homeContent.value.hero ?? {};
+
+    return {
+        title: heroContent.title ?? defaultHero.title,
+        subtitlePrimary:
+            heroContent.subtitle_primary ??
+            heroContent.subtitlePrimary ??
+            defaultHero.subtitlePrimary,
+        subtitleSecondary:
+            heroContent.subtitle_secondary ??
+            heroContent.subtitleSecondary ??
+            defaultHero.subtitleSecondary,
+        backgroundImageUrl:
+            heroContent.background_image_url ??
+            heroContent.backgroundImageUrl ??
+            null,
+    };
+});
+
+const heroBackgroundStyle = computed(() => {
+    const url = hero.value.backgroundImageUrl;
+    return url ? { backgroundImage: `url(${url})` } : {};
+});
+
+const featureHighlights = computed(() => {
+    const highlights = homeContent.value.featureHighlights ?? [];
+    if (Array.isArray(highlights) && highlights.length) {
+        return highlights.map((highlight) => ({
+            title: highlight.title ?? '',
+            description: highlight.description ?? '',
+            icon: highlight.icon ?? 'fas fa-circle',
+        }));
+    }
+
+    return defaultFeatureHighlights.slice();
+});
+
+const about = computed(() => {
+    const aboutContent = homeContent.value.about ?? {};
+
+    const features =
+        Array.isArray(aboutContent.features) && aboutContent.features.length
+            ? aboutContent.features.map((feature) => ({
+                  title: feature.title ?? '',
+                  icon: feature.icon ?? 'fas fa-circle',
+              }))
+            : defaultAbout.features.slice();
+
+    return {
+        title: aboutContent.title ?? defaultAbout.title,
+        description: aboutContent.description ?? defaultAbout.description,
+        imageUrl:
+            aboutContent.image_url ??
+            aboutContent.imageUrl ??
+            null,
+        features,
+    };
+});
+
+const aboutImageStyle = computed(() => {
+    const url = about.value.imageUrl;
+    return url ? { backgroundImage: `url(${url})` } : {};
+});
+
+const services = computed(() => {
+    const source =
+        Array.isArray(homeContent.value.services) && homeContent.value.services.length
+            ? homeContent.value.services
+            : defaultServices;
+
+    return source.map((service, index) => {
+        const items = Array.isArray(service.items) ? service.items : [];
+
+        return {
+            title: service.title ?? '',
+            icon: service.icon ?? '',
+            description: service.description ?? '',
+            items,
+            imageUrl:
+                service.image_url ??
+                service.imageUrl ??
+                null,
+            imageClass: service.image_class ?? service.imageClass ?? '',
+            reverse: Object.prototype.hasOwnProperty.call(service, 'reverse')
+                ? Boolean(service.reverse)
+                : index % 2 === 1,
+        };
+    });
+});
+
+const partnerLogos = computed(() => {
+    const logos = homeContent.value.partnerLogos ?? homeContent.value.logos ?? [];
+    if (!Array.isArray(logos)) {
+        return [];
+    }
+
+    return logos
+        .map((logo) => ({
+            name: logo?.name ?? '',
+            src: logo?.src ?? null,
+        }))
+        .filter((logo) => logo.name || logo.src);
+});
+
+// Refs for animations
+const heroContent = ref(null);
+const heroTitle = ref(null);
+const heroSubtitle1 = ref(null);
+const heroSubtitle2 = ref(null);
+const featuresGrid = ref(null);
+const aboutSection = ref(null);
+const aboutText = ref(null);
+const aboutImage = ref(null);
+const aboutFeatures = ref(null);
+const servicesSection = ref(null);
+const servicesTitle = ref(null);
+const serviceRow1 = ref(null);
 
 const setServiceRow1 = (component) => {
     if (!component) {
@@ -179,9 +326,11 @@ const setServiceRow1 = (component) => {
 
     serviceRow1.value = component.root?.value ?? component.$el ?? component;
 };
+
 // Article highlight data
 const articleImageFallback = null;
-const articleExcerptFallback = 'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.';
+const articleExcerptFallback =
+    'Antibiotik bukan untuk semua batuk-pilek. Pelajari indikasi, efek samping umum, dan mengapa harus dihabiskan sesuai resep.';
 const articleTitleFallback = 'Amoksisilin: Kapan Perlu Kapan Tidak';
 const articleDateFallback = '12/08/2025';
 
@@ -208,7 +357,7 @@ onMounted(() => {
         aboutFeatures: aboutFeatures.value,
         servicesSection: servicesSection.value,
         servicesTitle: servicesTitle.value,
-        serviceRow1: serviceRow1.value
+        serviceRow1: serviceRow1.value,
     });
 });
 </script>
