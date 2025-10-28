@@ -4,11 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\HomeAboutFeatureResource\Pages;
 use App\Models\HomeAboutFeature;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -41,7 +43,23 @@ class HomeAboutFeatureResource extends Resource
                         TextInput::make('icon')
                             ->label('Kelas Ikon')
                             ->helperText('Gunakan kelas Font Awesome, misalnya "fas fa-heart".')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->nullable()
+                            ->dehydrateStateUsing(fn ($state) => filled($state) ? $state : null)
+                            ->rule('required_without:icon_image_path'),
+                        FileUpload::make('icon_image_path')
+                            ->label('Ikon Gambar')
+                            ->directory('home/about/icons')
+                            ->disk('public')
+                            ->image()
+                            ->acceptedFileTypes(['image/png', 'image/svg+xml'])
+                            ->maxSize(2048)
+                            ->helperText('Opsional. Upload ikon PNG/SVG transparan berukuran 72x72 px.')
+                            ->downloadable()
+                            ->openable()
+                            ->previewable()
+                            ->rule('required_without:icon')
+                            ->columnSpan(2),
                         TextInput::make('sort_order')
                             ->label('Urutan')
                             ->numeric()
@@ -61,8 +79,15 @@ class HomeAboutFeatureResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(40),
+                ImageColumn::make('icon_image_path')
+                    ->label('Ikon Gambar')
+                    ->disk('public')
+                    ->width(40)
+                    ->height(40)
+                    ->toggleable(),
                 TextColumn::make('icon')
                     ->label('Ikon')
+                    ->formatStateUsing(fn (?string $state) => $state ?: '—')
                     ->limit(40)
                     ->toggleable(),
                 TextColumn::make('sort_order')

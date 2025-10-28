@@ -27,6 +27,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('icon')->nullable();
+            $table->string('icon_image_path')->nullable();
             $table->text('description')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
@@ -36,6 +37,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('icon')->nullable();
+            $table->string('icon_image_path')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
         });
@@ -44,6 +46,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('icon')->nullable();
+            $table->string('icon_image_path')->nullable();
             $table->text('description')->nullable();
             $table->json('items')->nullable();
             $table->string('image_path')->nullable();

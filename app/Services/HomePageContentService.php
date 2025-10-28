@@ -20,16 +20,19 @@ class HomePageContentService
     private const DEFAULT_FEATURE_HIGHLIGHTS = [
         [
             'icon' => 'fas fa-pills',
+            'icon_image_url' => null,
             'title' => 'Resep & Non-Resep',
             'description' => 'Layanan obat resep dan non-resep dengan konsultasi farmasi profesional',
         ],
         [
             'icon' => 'fas fa-clock',
+            'icon_image_url' => null,
             'title' => 'Jam Operasional',
             'description' => 'Buka setiap hari dari pukul 08:00 - 22:00 WITA',
         ],
         [
             'icon' => 'fas fa-shield-alt',
+            'icon_image_url' => null,
             'title' => 'Produk Terjamin',
             'description' => 'Keaslian dan kualitas produk terjamin dengan izin resmi BPOM',
         ],
@@ -41,14 +44,17 @@ class HomePageContentService
         'features' => [
             [
                 'icon' => 'fas fa-certificate',
+                'icon_image_url' => null,
                 'title' => 'Apoteker Berpengalaman',
             ],
             [
                 'icon' => 'fas fa-check-circle',
+                'icon_image_url' => null,
                 'title' => 'Produk Berkualitas',
             ],
             [
                 'icon' => 'fas fa-heart',
+                'icon_image_url' => null,
                 'title' => 'Pelayanan Ramah',
             ],
         ],
@@ -57,6 +63,7 @@ class HomePageContentService
     private const DEFAULT_SERVICES = [
         [
             'icon' => 'fas fa-prescription-bottle-alt',
+            'icon_image_url' => null,
             'title' => 'Layanan Resep',
             'description' => 'Kami menyediakan layanan resep dokter dengan standar tinggi dan penuh ketelitian. Apoteker profesional kami akan memastikan setiap resep diproses dengan tepat dan aman, disertai dengan konsultasi mengenai penggunaan obat yang benar.',
             'items' => [
@@ -70,6 +77,7 @@ class HomePageContentService
         ],
         [
             'icon' => 'fas fa-notes-medical',
+            'icon_image_url' => null,
             'title' => 'Konsultasi Kesehatan',
             'description' => 'Dapatkan konsultasi kesehatan gratis dengan apoteker berpengalaman kami. Kami siap membantu Anda dengan berbagai pertanyaan seputar kesehatan dan penggunaan obat yang tepat.',
             'items' => [
@@ -83,6 +91,7 @@ class HomePageContentService
         ],
         [
             'icon' => 'fas fa-heartbeat',
+            'icon_image_url' => null,
             'title' => 'Pemeriksaan Kesehatan',
             'description' => 'Kami menyediakan layanan pemeriksaan kesehatan dasar untuk membantu Anda memantau kondisi kesehatan secara rutin. Dengan peralatan modern dan tenaga terlatih, kami siap memberikan pelayanan terbaik.',
             'items' => [
@@ -113,9 +122,10 @@ class HomePageContentService
             ->orderBy('sort_order')
             ->get()
             ->map(fn (HomeFeatureHighlight $feature) => [
-                'icon' => $feature->icon ?: 'fas fa-circle',
+                'icon' => $feature->icon,
                 'title' => $feature->title,
                 'description' => $feature->description,
+                'icon_image_url' => $feature->icon_image_path ? Storage::url($feature->icon_image_path) : null,
             ])
             ->all();
 
@@ -127,8 +137,9 @@ class HomePageContentService
             ->orderBy('sort_order')
             ->get()
             ->map(fn (HomeAboutFeature $feature) => [
-                'icon' => $feature->icon ?: 'fas fa-circle',
+                'icon' => $feature->icon,
                 'title' => $feature->title,
+                'icon_image_url' => $feature->icon_image_path ? Storage::url($feature->icon_image_path) : null,
             ])
             ->all();
 
@@ -144,12 +155,13 @@ class HomePageContentService
             ->get()
             ->map(function (HomeService $service, int $index) {
                 return [
-                    'icon' => $service->icon ?: 'fas fa-circle',
+                    'icon' => $service->icon,
                     'title' => $service->title,
                     'description' => $service->description,
                     'items' => array_values($service->items ?? []),
                     'image_url' => $service->image_path ? Storage::url($service->image_path) : null,
                     'image_class' => null,
+                    'icon_image_url' => $service->icon_image_path ? Storage::url($service->icon_image_path) : null,
                     'reverse' => $index % 2 === 1,
                 ];
             })

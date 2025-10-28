@@ -2,8 +2,13 @@
     <div class="service-row service-card" :class="{ reverse }" ref="root">
         <div class="service-image" :class="imageClass" :style="imageStyles"></div>
         <div class="service-content">
-            <div class="service-icon">
-                <i :class="icon"></i>
+            <div class="service-icon" :class="{ 'has-image': Boolean(iconImageUrl) }">
+                <img
+                    v-if="iconImageUrl"
+                    :src="iconImageUrl"
+                    :alt="`${title} icon`"
+                />
+                <i v-else :class="icon"></i>
             </div>
             <h3>{{ title }}</h3>
             <p>{{ description }}</p>
@@ -24,7 +29,11 @@ const props = defineProps({
     },
     icon: {
         type: String,
-        required: true
+        default: ''
+    },
+    iconImageUrl: {
+        type: String,
+        default: null
     },
     description: {
         type: String,
@@ -110,6 +119,15 @@ defineExpose({
         i {
             font-size: 2rem;
             color: white;
+        }
+        img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+        &.has-image {
+            background: #ffffff;
+            border: 2px solid #1a237e;
         }
     }
     h3 {

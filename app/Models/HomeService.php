@@ -12,6 +12,7 @@ class HomeService extends Model
     protected $fillable = [
         'title',
         'icon',
+        'icon_image_path',
         'description',
         'items',
         'image_path',

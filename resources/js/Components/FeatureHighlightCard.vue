@@ -1,7 +1,16 @@
 <template>
   <article class="feature-card">
-    <div class="feature-card__icon" aria-hidden="true">
-      <i :class="icon" />
+    <div
+      class="feature-card__icon"
+      :class="{ 'has-image': Boolean(iconImageUrl) }"
+      aria-hidden="true"
+    >
+      <img
+        v-if="iconImageUrl"
+        :src="iconImageUrl"
+        :alt="`${title} icon`"
+      />
+      <i v-else :class="fallbackIcon" />
     </div>
     <h3 class="feature-card__title">{{ title }}</h3>
     <p class="feature-card__description">{{ description }}</p>
@@ -9,10 +18,16 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   icon: {
     type: String,
-    required: true
+    default: ''
+  },
+  iconImageUrl: {
+    type: String,
+    default: null
   },
   title: {
     type: String,
@@ -23,6 +38,10 @@ defineProps({
     required: true
   }
 })
+
+const fallbackIcon = computed(
+  () => props.icon || (props.iconImageUrl ? '' : 'fas fa-circle')
+)
 </script>
 
 <style scoped lang="scss">
@@ -42,12 +61,29 @@ defineProps({
   }
 
   &__icon {
-    font-size: 3rem;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #eef2ff;
     color: #1a237e;
     display: grid;
+    place-items: center;
+    font-size: 3rem;
 
     i {
       line-height: 1;
+    }
+
+    img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    &.has-image {
+      background: #ffffff;
+      border: 2px solid #1a237e;
+      font-size: 0;
     }
   }
 

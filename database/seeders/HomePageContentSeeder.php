@@ -83,18 +83,21 @@ class HomePageContentSeeder extends Seeder
             [
                 'title' => 'Resep & Non-Resep',
                 'icon' => 'fas fa-pills',
+                'icon_image_path' => null,
                 'description' => 'Layanan obat resep dan non-resep dengan konsultasi farmasi profesional',
                 'sort_order' => 1,
             ],
             [
                 'title' => 'Jam Operasional',
                 'icon' => 'fas fa-clock',
+                'icon_image_path' => null,
                 'description' => 'Buka setiap hari dari pukul 08:00 - 22:00 WITA',
                 'sort_order' => 2,
             ],
             [
                 'title' => 'Produk Terjamin',
                 'icon' => 'fas fa-shield-alt',
+                'icon_image_path' => null,
                 'description' => 'Keaslian dan kualitas produk terjamin dengan izin resmi BPOM',
                 'sort_order' => 3,
             ],
@@ -111,16 +114,19 @@ class HomePageContentSeeder extends Seeder
             [
                 'title' => 'Apoteker Berpengalaman',
                 'icon' => 'fas fa-certificate',
+                'icon_image_path' => null,
                 'sort_order' => 1,
             ],
             [
                 'title' => 'Produk Berkualitas',
                 'icon' => 'fas fa-check-circle',
+                'icon_image_path' => null,
                 'sort_order' => 2,
             ],
             [
                 'title' => 'Pelayanan Ramah',
                 'icon' => 'fas fa-heart',
+                'icon_image_path' => null,
                 'sort_order' => 3,
             ],
         ];
@@ -136,6 +142,7 @@ class HomePageContentSeeder extends Seeder
             [
                 'title' => 'Layanan Resep',
                 'icon' => 'fas fa-prescription-bottle-alt',
+                'icon_image_path' => null,
                 'description' => 'Kami menyediakan layanan resep dokter dengan standar tinggi dan penuh ketelitian. Apoteker profesional kami akan memastikan setiap resep diproses dengan tepat dan aman, disertai dengan konsultasi mengenai penggunaan obat yang benar.',
                 'items' => [
                     'Pelayanan resep dokter cepat dan akurat',
@@ -149,6 +156,7 @@ class HomePageContentSeeder extends Seeder
             [
                 'title' => 'Konsultasi Kesehatan',
                 'icon' => 'fas fa-notes-medical',
+                'icon_image_path' => null,
                 'description' => 'Dapatkan konsultasi kesehatan gratis dengan apoteker berpengalaman kami. Kami siap membantu Anda dengan berbagai pertanyaan seputar kesehatan dan penggunaan obat yang tepat.',
                 'items' => [
                     'Konsultasi gratis dengan apoteker',
@@ -162,6 +170,7 @@ class HomePageContentSeeder extends Seeder
             [
                 'title' => 'Pemeriksaan Kesehatan',
                 'icon' => 'fas fa-heartbeat',
+                'icon_image_path' => null,
                 'description' => 'Kami menyediakan layanan pemeriksaan kesehatan dasar untuk membantu Anda memantau kondisi kesehatan secara rutin. Dengan peralatan modern dan tenaga terlatih, kami siap memberikan pelayanan terbaik.',
                 'items' => [
                     'Cek tekanan darah',

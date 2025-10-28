@@ -12,6 +12,7 @@ class HomeAboutFeature extends Model
     protected $fillable = [
         'title',
         'icon',
+        'icon_image_path',
         'sort_order',
     ];
 }

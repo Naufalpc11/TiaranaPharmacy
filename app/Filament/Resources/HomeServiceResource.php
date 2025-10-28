@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -44,17 +45,35 @@ class HomeServiceResource extends Resource
                             ->maxLength(255),
                         TextInput::make('icon')
                             ->label('Kelas Ikon')
-                            ->helperText('Gunakan kelas Font Awesome, misalnya "fas fa-prescription-bottle-alt".')
-                            ->maxLength(255),
+                            ->helperText('Gunakan kelas Font Awesome, misalnya "fas fa-prescription-bottle-alt" (opsional).')
+                            ->maxLength(255)
+                            ->nullable()
+                            ->dehydrateStateUsing(fn ($state) => filled($state) ? $state : null)
+                            ->rule('required_without:icon_image_path'),
+                        FileUpload::make('icon_image_path')
+                            ->label('Ikon Gambar')
+                            ->directory('home/services/icons')
+                            ->disk('public')
+                            ->image()
+                            ->maxSize(2048)
+                            ->acceptedFileTypes(['image/png', 'image/svg+xml'])
+                            ->helperText('Opsional. Upload ikon PNG transparan berukuran 80x80 px.')
+                            ->downloadable()
+                            ->openable()
+                            ->previewable()
+                            ->rule('required_without:icon')
+                            ->columnSpan(2),
                         Textarea::make('description')
                             ->label('Deskripsi')
                             ->rows(5)
-                            ->required(),
+                            ->required()
+                            ->columnSpan(2),
                         TagsInput::make('items')
                             ->label('Poin Layanan')
                             ->placeholder('Tekan Enter untuk menambah poin')
                             ->required()
-                            ->hint('Poin ini akan ditampilkan sebagai daftar cek.'),
+                            ->hint('Poin ini akan ditampilkan sebagai daftar cek.')
+                            ->columnSpan(2),
                         TextInput::make('sort_order')
                             ->label('Urutan')
                             ->numeric()
@@ -91,8 +110,15 @@ class HomeServiceResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(40),
+                ImageColumn::make('icon_image_path')
+                    ->label('Ikon Gambar')
+                    ->disk('public')
+                    ->width(40)
+                    ->height(40)
+                    ->toggleable(),
                 TextColumn::make('icon')
                     ->label('Ikon')
+                    ->formatStateUsing(fn (?string $state) => $state ?: '--')
                     ->limit(40)
                     ->toggleable(),
                 BadgeColumn::make('items')

@@ -26,6 +26,7 @@
                     v-for="feature in featureHighlights"
                     :key="feature.title"
                     :icon="feature.icon"
+                    :icon-image-url="feature.iconImageUrl"
                     :title="feature.title"
                     :description="feature.description"
                 />
@@ -42,7 +43,17 @@
                                 :key="feature.title"
                                 class="about-feature"
                             >
-                                <i :class="feature.icon"></i>
+                                <div
+                                    class="about-feature__icon"
+                                    :class="{ 'has-image': Boolean(feature.iconImageUrl) }"
+                                >
+                                    <img
+                                        v-if="feature.iconImageUrl"
+                                        :src="feature.iconImageUrl"
+                                        :alt="`${feature.title} icon`"
+                                    />
+                                    <i v-else :class="feature.icon"></i>
+                                </div>
                                 <h4>{{ feature.title }}</h4>
                             </div>
                         </div>
@@ -61,6 +72,7 @@
                         :key="service.title"
                         :title="service.title"
                         :icon="service.icon"
+                        :icon-image-url="service.iconImageUrl"
                         :description="service.description"
                         :items="service.items"
                         :image-class="service.imageClass"
@@ -121,16 +133,19 @@ const defaultHero = {
 const defaultFeatureHighlights = [
     {
         icon: 'fas fa-pills',
+        iconImageUrl: null,
         title: 'Resep & Non-Resep',
         description: 'Layanan obat resep dan non-resep dengan konsultasi farmasi profesional',
     },
     {
         icon: 'fas fa-clock',
+        iconImageUrl: null,
         title: 'Jam Operasional',
         description: 'Buka setiap hari dari pukul 08:00 - 22:00 WITA',
     },
     {
         icon: 'fas fa-shield-alt',
+        iconImageUrl: null,
         title: 'Produk Terjamin',
         description: 'Keaslian dan kualitas produk terjamin dengan izin resmi BPOM',
     },
@@ -142,14 +157,17 @@ const defaultAbout = {
     features: [
         {
             icon: 'fas fa-certificate',
+            iconImageUrl: null,
             title: 'Apoteker Berpengalaman',
         },
         {
             icon: 'fas fa-check-circle',
+            iconImageUrl: null,
             title: 'Produk Berkualitas',
         },
         {
             icon: 'fas fa-heart',
+            iconImageUrl: null,
             title: 'Pelayanan Ramah',
         },
     ],
@@ -158,6 +176,7 @@ const defaultAbout = {
 const defaultServices = [
     {
         icon: 'fas fa-prescription-bottle-alt',
+        iconImageUrl: null,
         title: 'Layanan Resep',
         description: 'Kami menyediakan layanan resep dokter dengan standar tinggi dan penuh ketelitian. Apoteker profesional kami akan memastikan setiap resep diproses dengan tepat dan aman, disertai dengan konsultasi mengenai penggunaan obat yang benar.',
         items: [
@@ -171,6 +190,7 @@ const defaultServices = [
     },
     {
         icon: 'fas fa-notes-medical',
+        iconImageUrl: null,
         title: 'Konsultasi Kesehatan',
         description: 'Dapatkan konsultasi kesehatan gratis dengan apoteker berpengalaman kami. Kami siap membantu Anda dengan berbagai pertanyaan seputar kesehatan dan penggunaan obat yang tepat.',
         items: [
@@ -184,6 +204,7 @@ const defaultServices = [
     },
     {
         icon: 'fas fa-heartbeat',
+        iconImageUrl: null,
         title: 'Pemeriksaan Kesehatan',
         description: 'Kami menyediakan layanan pemeriksaan kesehatan dasar untuk membantu Anda memantau kondisi kesehatan secara rutin. Dengan peralatan modern dan tenaga terlatih, kami siap memberikan pelayanan terbaik.',
         items: [
@@ -227,14 +248,23 @@ const heroBackgroundStyle = computed(() => {
 const featureHighlights = computed(() => {
     const highlights = homeContent.value.featureHighlights ?? [];
     if (Array.isArray(highlights) && highlights.length) {
-        return highlights.map((highlight) => ({
-            title: highlight.title ?? '',
-            description: highlight.description ?? '',
-            icon: highlight.icon ?? 'fas fa-circle',
-        }));
+        return highlights.map((highlight) => {
+            const iconImageUrl =
+                highlight.icon_image_url ??
+                highlight.iconImageUrl ??
+                null;
+            const iconClass = highlight.icon ?? null;
+
+            return {
+                title: highlight.title ?? '',
+                description: highlight.description ?? '',
+                icon: iconClass || (iconImageUrl ? '' : 'fas fa-circle'),
+                iconImageUrl,
+            };
+        });
     }
 
-    return defaultFeatureHighlights.slice();
+    return defaultFeatureHighlights.map((feature) => ({ ...feature }));
 });
 
 const about = computed(() => {
@@ -242,11 +272,20 @@ const about = computed(() => {
 
     const features =
         Array.isArray(aboutContent.features) && aboutContent.features.length
-            ? aboutContent.features.map((feature) => ({
-                  title: feature.title ?? '',
-                  icon: feature.icon ?? 'fas fa-circle',
-              }))
-            : defaultAbout.features.slice();
+            ? aboutContent.features.map((feature) => {
+                  const iconImageUrl =
+                      feature.icon_image_url ??
+                      feature.iconImageUrl ??
+                      null;
+                  const iconClass = feature.icon ?? null;
+
+                  return {
+                      title: feature.title ?? '',
+                      icon: iconClass || (iconImageUrl ? '' : 'fas fa-circle'),
+                      iconImageUrl,
+                  };
+              })
+            : defaultAbout.features.map((feature) => ({ ...feature }));
 
     return {
         title: aboutContent.title ?? defaultAbout.title,
@@ -272,10 +311,16 @@ const services = computed(() => {
 
     return source.map((service, index) => {
         const items = Array.isArray(service.items) ? service.items : [];
+        const iconImageUrl =
+            service.icon_image_url ??
+            service.iconImageUrl ??
+            null;
+        const iconClass = service.icon ?? '';
 
         return {
             title: service.title ?? '',
-            icon: service.icon ?? '',
+            icon: iconClass || (iconImageUrl ? '' : 'fas fa-circle'),
+            iconImageUrl,
             description: service.description ?? '',
             items,
             imageUrl:

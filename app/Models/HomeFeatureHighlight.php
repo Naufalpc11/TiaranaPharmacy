@@ -12,6 +12,7 @@ class HomeFeatureHighlight extends Model
     protected $fillable = [
         'title',
         'icon',
+        'icon_image_path',
         'description',
         'sort_order',
     ];
