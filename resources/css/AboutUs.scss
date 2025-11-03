@@ -7,7 +7,7 @@
     --radius-xl: 28px;
     --shadow-soft: 0 16px 40px rgba(15, 30, 80, 0.08);
     --shadow-card: 0 18px 45px rgba(19, 43, 133, 0.10);
-    --brand: #132b85
+    --brand: #132b85;
     --ink: #1f2a44;
     --muted: #3b4861;
     --line: rgba(19, 43, 133, 0.08);
@@ -34,9 +34,13 @@
 .about-header {
     position: relative;
     min-height: 100vh;
+    --hero-bg-url: url('../images/Interior.jpg');
     background:
         linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.75)),
-        url('../images/Interior.jpg') center/cover no-repeat;
+        var(--hero-bg-url);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     display: grid;
     place-items: center;
     padding: 4rem 2rem;
@@ -154,8 +158,8 @@ background: #fff;
     width: 100%;
     border-radius: 20px;
     box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
-    background: url("../images/WhatsApp Image 2024-07-29 at 20.05.38_c14c7704.jpg")
-                center / cover no-repeat;
+    --history-image-url: url("../images/WhatsApp Image 2024-07-29 at 20.05.38_c14c7704.jpg");
+    background: var(--history-image-url) center / cover no-repeat;
     aspect-ratio: 4.5 / 3;
     min-height: 360px;
 
@@ -361,5 +365,4 @@ background: #fff;
   .history-content { padding: 2rem 1.6rem; }
   .location-section .map-container iframe { min-height: 380px; }
 }
-
 

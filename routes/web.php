@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactMessageController;
 use App\Models\Article;
+use App\Services\AboutPageContentService;
 use App\Services\HomePageContentService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -42,8 +43,10 @@ Route::get('/', function (HomePageContentService $homePageContentService) {
 });
 
 // Route untuk halaman About Us
-Route::get('/about-us', function () {
-    return Inertia::render('AboutUs');
+Route::get('/about-us', function (AboutPageContentService $aboutPageContentService) {
+    return Inertia::render('AboutUs', [
+        'aboutContent' => $aboutPageContentService->get(),
+    ]);
 });
 
 // Route untuk halaman Contact

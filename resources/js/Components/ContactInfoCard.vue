@@ -1,7 +1,8 @@
 <template>
   <article class="contact-info-card">
     <div class="icon">
-      <i :class="icon" aria-hidden="true" />
+      <img v-if="iconImageUrl" :src="iconImageUrl" alt="" loading="lazy" />
+      <i v-else :class="icon" aria-hidden="true" />
     </div>
 
     <div class="content">
@@ -25,7 +26,11 @@
 defineProps({
   icon: {
     type: String,
-    required: true
+    default: ''
+  },
+  iconImageUrl: {
+    type: String,
+    default: ''
   },
   title: {
     type: String,
@@ -64,6 +69,12 @@ defineEmits(['copy'])
     background: rgba(47, 61, 245, 0.12);
     display: grid;
     place-items: center;
+
+    img {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+    }
 
     i {
       color: #1b3cc3;
