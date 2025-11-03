@@ -5,7 +5,6 @@ namespace App\Filament\Pages;
 use App\Filament\Resources\AboutPageSettingResource;
 use App\Models\AboutContactDetail;
 use App\Models\AboutPageSetting;
-use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -58,16 +57,6 @@ class ManageAboutLocation extends Page implements HasForms, HasTable
                 ->columns(2)
                 ->statePath('data')
                 ->model($this->resolveRecord()),
-        ];
-    }
-
-    protected function getActions(): array
-    {
-        return [
-            Action::make('save')
-                ->label('Simpan')
-                ->submit('save')
-                ->color('primary'),
         ];
     }
 

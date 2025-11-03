@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Filament\Resources\AboutPageSettingResource;
 use App\Models\AboutPageSetting;
-use Filament\Actions\Action;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
@@ -55,16 +54,6 @@ class ManageAboutTeam extends Page implements HasForms
                 ->columns(2)
                 ->statePath('data')
                 ->model($this->resolveRecord()),
-        ];
-    }
-
-    protected function getActions(): array
-    {
-        return [
-            Action::make('save')
-                ->label('Simpan')
-                ->submit('save')
-                ->color('primary'),
         ];
     }
 

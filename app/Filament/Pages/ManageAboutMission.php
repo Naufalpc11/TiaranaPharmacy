@@ -5,7 +5,6 @@ namespace App\Filament\Pages;
 use App\Filament\Resources\AboutPageSettingResource;
 use App\Models\AboutMission;
 use App\Models\AboutPageSetting;
-use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -53,16 +52,6 @@ class ManageAboutMission extends Page implements HasForms, HasTable
                 ->schema(AboutPageSettingResource::getMissionSchema())
                 ->statePath('data')
                 ->model($this->resolveRecord()),
-        ];
-    }
-
-    protected function getActions(): array
-    {
-        return [
-            Action::make('save')
-                ->label('Simpan')
-                ->submit('save')
-                ->color('primary'),
         ];
     }
 
