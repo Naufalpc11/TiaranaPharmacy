@@ -5,12 +5,16 @@
                 <h3>Apotek Tiarana Farma</h3>
                 <p>Melayani dengan sepenuh hati sejak 2010</p>
             </div>
-            <div class="footer-section">
+            <div class="footer-section footer-section--contact">
                 <h3>Kontak</h3>
                 <ul>
                     <li><i class="fas fa-phone"></i> 0812-3456-7890</li>
                     <li><i class="fas fa-envelope"></i> tiaranafarma@gmail.com</li>
                     <li><i class="fas fa-map-marker-alt"></i> Jl. Sepinggan Baru</li>
+                    <li class="contact-link">
+                        <i class="fas fa-bug"></i>
+                        <a href="/report-bug">Laporkan Bug</a>
+                    </li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -30,7 +34,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© {{ currentYear }} Apotek Tiarana Farma. All rights reserved.</p>
+            <p>Ac {{ currentYear }} Apotek Tiarana Farma. All rights reserved.</p>
         </div>
     </footer>
 </template>
@@ -85,6 +89,38 @@ const currentYear = new Date().getFullYear();
     p {
         margin: 0;
         line-height: 1.6;
+    }
+}
+
+.footer-section--contact .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    a {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: #90caf9;
+            text-decoration: underline;
+        }
+        &:focus-visible {
+            outline: 2px solid rgba(255, 255, 255, 0.65);
+            outline-offset: 2px;
+        }
+    }
+
+    i {
+        color: #ffffff;
+        transition: color 0.2s ease;
+    }
+
+    &:hover i,
+    &:focus-within i {
+        color: #90caf9;
     }
 }
 

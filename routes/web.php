@@ -1,6 +1,7 @@
 ﻿<?php
 
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\ContactMessageController;
 use App\Models\Article;
 use App\Services\AboutPageContentService;
@@ -54,6 +55,12 @@ Route::get('/contact', function () {
     return Inertia::render('Contact');
 });
 Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
+
+// Route untuk halaman Report Bug
+Route::get('/report-bug', function () {
+    return Inertia::render('ReportBug');
+})->name('bug-report.create');
+Route::post('/report-bug', [BugReportController::class, 'store'])->name('bug-report.store');
 
 // Route untuk halaman Artikel
 Route::get('/artikel', [ArticleController::class, 'index'])->name('articles.index');

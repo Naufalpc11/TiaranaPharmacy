@@ -128,6 +128,11 @@ class ContactMessageResource extends Resource
                     ->modalHeading('Detail Pesan Kontak')
                     ->modalWidth('lg')
                     ->form(self::viewActionForm()),
+                Actions\DeleteAction::make()
+                    ->label('Hapus')
+                    ->modalHeading('Hapus Pesan Kontak?')
+                    ->modalDescription('Tindakan ini akan menghapus pesan secara permanen dari basis data.')
+                    ->successNotificationTitle('Pesan kontak berhasil dihapus.'),
                 Actions\Action::make('markAsReviewed')
                     ->label('Tandai Sudah Dibaca')
                     ->icon('heroicon-m-check')
@@ -154,6 +159,11 @@ class ContactMessageResource extends Resource
                         ->action(function (Collection $records): void {
                             $records->each->update(['is_reviewed' => false]);
                         }),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Hapus yang Dipilih')
+                        ->requiresConfirmation()
+                        ->modalHeading('Hapus Pesan Terpilih?')
+                        ->modalDescription('Pesan yang dipilih akan dihapus permanen.'),
                 ]),
             ])
             ->emptyStateHeading('Belum ada pesan')

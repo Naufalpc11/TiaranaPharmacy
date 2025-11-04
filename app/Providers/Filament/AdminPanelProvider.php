@@ -3,10 +3,13 @@
 namespace App\Providers\Filament;
 
 use App\Http\Controllers\Filament\AdminLoginController;
+use App\Support\DatabaseUsage;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Notifications\Notification;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -43,6 +46,55 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
+            ->bootUsing(function (Panel $panel) {
+                Filament::serving(function () {
+                    if (app()->runningInConsole()) {
+                        return;
+                    }
+
+                    $guard = Filament::auth();
+
+                    if (! $guard || ! $guard->check()) {
+                        return;
+                    }
+
+                    $usage = app(DatabaseUsage::class)->getFormattedUsage();
+
+                    if (! $usage) {
+                        return;
+                    }
+
+                    $threshold = (float) config('database-usage.threshold_percent', 90);
+
+                    if ($usage['percentage'] < $threshold) {
+                        return;
+                    }
+
+                    $rounded = (int) floor($usage['percentage']);
+                    $sessionKey = 'database_usage.notified_percent';
+                    $lastNotified = session()->get($sessionKey);
+
+                    if ($lastNotified === $rounded) {
+                        return;
+                    }
+
+                    session()->put($sessionKey, $rounded);
+
+                    Notification::make()
+                        ->title('Basis data hampir penuh')
+                        ->body(
+                            sprintf(
+                                'Penggunaan basis data telah mencapai %s%% (%s / %s MB). Pertimbangkan untuk menghapus data lama atau menambah kapasitas.',
+                                $usage['percentage_formatted'],
+                                $usage['used_mb_formatted'],
+                                $usage['max_mb_formatted'],
+                            )
+                        )
+                        ->warning()
+                        ->persistent()
+                        ->send();
+                });
+            })
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
