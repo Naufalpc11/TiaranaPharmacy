@@ -21,7 +21,7 @@
         </div>
       </section>
 
-      <section class="chatbot-shell">
+      <section class="chatbot-shell" :class="{ 'chatbot-shell--full': !isAuthenticated }">
         <aside
           v-if="isAuthenticated"
           class="chatbot-sidebar"

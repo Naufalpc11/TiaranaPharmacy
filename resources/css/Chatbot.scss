@@ -68,6 +68,11 @@
   }
 }
 
+.chatbot-shell--full {
+  max-width: 820px;
+  grid-template-columns: 1fr;
+}
+
 .chatbot-sidebar {
   background: #ffffff;
   border-radius: 24px;
