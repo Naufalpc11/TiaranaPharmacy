@@ -59,3 +59,26 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## AI Chatbot Setup
+
+This project now includes an AI chatbot powered by Google Gemini for health-related questions. To enable it in your environment:
+
+1. Create a Gemini API key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Copy `.env.example` to `.env` if you have not already, then set the following variables:
+
+   ```bash
+   GEMINI_API_KEY="your-key-here"
+   GEMINI_MODEL=gemini-1_5-flash
+   GEMINI_SYSTEM_INSTRUCTION="You are TiaranaPharmacy virtual assistant..."
+   ```
+
+   Adjust the system instruction text if you need to tune the assistant's tone.
+
+3. Run the database migrations so the chatbot conversation tables are created:
+
+   ```bash
+   php artisan migrate
+   ```
+
+4. Start the Vite and Laravel dev servers. The chatbot interface is available at `/chatbot`. Guests can chat immediately, and authenticated users will have their conversation history saved automatically.

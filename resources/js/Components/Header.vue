@@ -36,9 +36,10 @@
                     <li><Link href="/artikel" class="nav-link" @click="closeMenu">Artikel</Link></li>
                     <li><Link href="/contact" class="nav-link" @click="closeMenu">Kontak</Link></li>
                 </ul>
-                <button class="chatbot-btn" disabled title="Segera hadir!" @click="closeMenu">
-                    <i class="fa fa-robot"></i> AI Chatbot
-                </button>
+                <Link href="/chatbot" class="chatbot-btn" @click="closeMenu">
+                    <i class="fa fa-robot" aria-hidden="true"></i>
+                    <span>AI Chatbot</span>
+                </Link>
             </div>
         </nav>
     </header>
@@ -203,7 +204,7 @@ onUnmounted(() => {
             .chatbot-btn {
                 background: #1a237e;
                 color: white;
-                border: none;
+                border: 1px solid transparent;
                 padding: 0.8rem 1.5rem;
                 border-radius: 50px;
                 font-size: 1rem;
@@ -211,16 +212,19 @@ onUnmounted(() => {
                 gap: 0.5rem;
                 align-items: center;
                 justify-content: center;
-                cursor: not-allowed;
-                opacity: 0.8;
+                cursor: pointer;
+                opacity: 1;
                 transition: all 0.3s ease;
+                text-decoration: none;
 
                 i {
                     margin-right: 0.5rem;
                 }
 
                 &:hover {
-                    opacity: 0.9;
+                    background: #10194f;
+                    transform: translateY(-1px);
+                    box-shadow: 0 8px 16px rgba(26, 35, 126, 0.15);
                 }
             }
         }
@@ -304,5 +308,4 @@ onUnmounted(() => {
     }
 }
 </style>
-
 

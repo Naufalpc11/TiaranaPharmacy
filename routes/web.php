@@ -1,5 +1,6 @@
 ﻿<?php
 
+use App\Http\Controllers\Api\GeminiChatController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\ContactMessageController;
@@ -62,6 +63,23 @@ Route::get('/report-bug', function () {
 })->name('bug-report.create');
 Route::post('/report-bug', [BugReportController::class, 'store'])->name('bug-report.store');
 
+// Route untuk halaman Chatbot
+Route::get('/chatbot', function () {
+    return Inertia::render('Chatbot');
+})->name('chatbot');
+
 // Route untuk halaman Artikel
 Route::get('/artikel', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/artikel/{slug}', [ArticleController::class, 'show'])->name('articles.show');
+
+Route::prefix('api')->group(function () {
+    Route::post('chatbot/message', [GeminiChatController::class, 'sendMessage'])
+        ->name('api.chatbot.message');
+
+    Route::middleware('auth')->group(function () {
+        Route::get('chatbot/conversations', [GeminiChatController::class, 'index'])
+            ->name('api.chatbot.conversations.index');
+        Route::get('chatbot/conversations/{conversation}', [GeminiChatController::class, 'show'])
+            ->name('api.chatbot.conversations.show');
+    });
+});
