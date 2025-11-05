@@ -52,7 +52,7 @@ export const initializeContactAnimations = (refs = {}) => {
       scrollTrigger: {
         trigger: formCard,
         start: 'top 85%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
       y: 60,
       autoAlpha: 0,
@@ -69,7 +69,7 @@ export const initializeContactAnimations = (refs = {}) => {
         scrollTrigger: {
           trigger: formCard,
           start: 'top 80%',
-          toggleActions: 'play none none reverse',
+          once: true,
         },
         y: 30,
         autoAlpha: 0,

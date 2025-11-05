@@ -31,7 +31,7 @@ export const initializeAboutUsAnimations = () => {
     scrollTrigger: {
       trigger: '.about-content',
       start: 'top 75%',
-      toggleActions: 'play none none reverse'
+      once: true
     }
   });
 
@@ -48,7 +48,7 @@ export const initializeAboutUsAnimations = () => {
       scrollTrigger: {
         trigger: '.history-section',
         start: 'top 70%',
-        toggleActions: 'play none none reverse'
+        once: true
       }
     });
 
@@ -72,7 +72,7 @@ export const initializeAboutUsAnimations = () => {
     scrollTrigger: {
       trigger: '.team-section',
       start: 'top 75%',
-      toggleActions: 'play none none reverse'
+      once: true
     },
     y: 30,
     opacity: 0,
@@ -85,7 +85,7 @@ export const initializeAboutUsAnimations = () => {
     scrollTrigger: {
       trigger: '.pharmacist-card',
       start: 'top 80%',
-      toggleActions: 'play none none reverse'
+      once: true
     },
     y: 60,
     opacity: 0,
@@ -98,7 +98,7 @@ export const initializeAboutUsAnimations = () => {
     scrollTrigger: {
       trigger: '.values-section',
       start: 'top 75%',
-      toggleActions: 'play none none reverse'
+      once: true
     },
     y: 40,
     opacity: 0,
@@ -111,7 +111,7 @@ export const initializeAboutUsAnimations = () => {
     scrollTrigger: {
       trigger: '.history-section',
       start: 'top 75%',
-      toggleActions: 'play none none reverse'
+      once: true
     },
     y: 40,
     opacity: 0,
@@ -125,7 +125,7 @@ export const initializeAboutUsAnimations = () => {
     scrollTrigger: {
       trigger: '.location-section',
       start: 'top 70%',
-      toggleActions: 'play none none reverse'
+      once: true
     }
   });
 

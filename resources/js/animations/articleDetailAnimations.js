@@ -65,7 +65,7 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
       scrollTrigger: {
         trigger: contentCard,
         start: 'top 85%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
       y: 60,
       autoAlpha: 0,
@@ -82,7 +82,7 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
         scrollTrigger: {
           trigger: contentCard,
           start: 'top 75%',
-          toggleActions: 'play none none reverse',
+          once: true,
         },
         y: 20,
         autoAlpha: 0,

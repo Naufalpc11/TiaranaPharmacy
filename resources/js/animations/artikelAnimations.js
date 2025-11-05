@@ -70,7 +70,7 @@ export const initializeArtikelAnimations = (refs = {}) => {
         scrollTrigger: {
           trigger: artikelGrid,
           start: 'top 80%',
-          toggleActions: 'play none none reverse',
+          once: true,
         },
         y: 60,
         autoAlpha: 0,

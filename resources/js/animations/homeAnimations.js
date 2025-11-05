@@ -48,103 +48,114 @@ export const initializeHomeAnimations = (refs) => {
     );
 
   // Features grid animation
-  gsap.set(featuresGrid.children, {
-    autoAlpha: 0,
-    y: 50
-  });
+  if (featuresGrid && featuresGrid.children.length) {
+    const featureItems = Array.from(featuresGrid.children);
 
-  gsap.to(featuresGrid.children, {
-    scrollTrigger: {
-      trigger: featuresGrid,
-      start: 'top 90%',
-      end: 'top 60%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 0.5
-    },
-    y: 0,
-    autoAlpha: 1,
-    duration: 0.5,
-    stagger: 0.1
-  });
+    gsap.set(featureItems, {
+      autoAlpha: 0,
+      y: 50
+    });
+
+    gsap.to(featureItems, {
+      scrollTrigger: {
+        trigger: featuresGrid,
+        start: 'top 85%',
+        once: true
+      },
+      y: 0,
+      autoAlpha: 1,
+      duration: 0.6,
+      stagger: 0.12,
+      ease: 'power2.out'
+    });
+  }
 
   // About section animations
-  gsap.set(aboutText, {
-    autoAlpha: 0,
-    x: -50
-  });
+  if (aboutSection) {
+    if (aboutText) {
+      gsap.set(aboutText, {
+        autoAlpha: 0,
+        x: -50
+      });
 
-  gsap.set(aboutImage, {
-    autoAlpha: 0,
-    x: 50
-  });
+      gsap.to(aboutText, {
+        scrollTrigger: {
+          trigger: aboutSection,
+          start: 'top 85%',
+          once: true
+        },
+        x: 0,
+        autoAlpha: 1,
+        duration: 0.6,
+        ease: 'power2.out'
+      });
+    }
 
-  gsap.to(aboutText, {
-    scrollTrigger: {
-      trigger: aboutSection,
-      start: 'top 100%',
-      end: 'top 50%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 0.5
-    },
-    x: 0,
-    autoAlpha: 1,
-    duration: 0.5
-  });
+    if (aboutImage) {
+      gsap.set(aboutImage, {
+        autoAlpha: 0,
+        x: 50
+      });
 
-  gsap.to(aboutImage, {
-    scrollTrigger: {
-      trigger: aboutSection,
-      start: 'top 90%',
-      end: 'top 50%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 0.5
-    },
-    x: 0,
-    autoAlpha: 1,
-    duration: 0.5
-  });
+      gsap.to(aboutImage, {
+        scrollTrigger: {
+          trigger: aboutSection,
+          start: 'top 85%',
+          once: true
+        },
+        x: 0,
+        autoAlpha: 1,
+        duration: 0.6,
+        ease: 'power2.out'
+      });
+    }
+  }
 
   // About features animation
-  gsap.set(aboutFeatures.children, {
-    autoAlpha: 0,
-    y: 30
-  });
+  if (aboutFeatures && aboutFeatures.children.length) {
+    const featureItems = Array.from(aboutFeatures.children);
 
-  gsap.to(aboutFeatures.children, {
-    scrollTrigger: {
-      trigger: aboutFeatures,
-      start: 'top 90%',
-      end: 'top 50%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 0.5
-    },
-    y: 0,
-    autoAlpha: 1,
-    duration: 0.4,
-    stagger: {
-      each: 0.1,
-      from: "start"
-    }
-  });
+    gsap.set(featureItems, {
+      autoAlpha: 0,
+      y: 30
+    });
+
+    gsap.to(featureItems, {
+      scrollTrigger: {
+        trigger: aboutFeatures,
+        start: 'top 85%',
+        once: true
+      },
+      y: 0,
+      autoAlpha: 1,
+      duration: 0.5,
+      stagger: {
+        each: 0.1,
+        from: 'start'
+      },
+      ease: 'power2.out'
+    });
+  }
 
   // Services section animations
-  gsap.set(servicesTitle, {
-    y: 30,
-    opacity: 0
-  });
+  if (servicesSection && servicesTitle) {
+    gsap.set(servicesTitle, {
+      y: 30,
+      opacity: 0
+    });
 
-  gsap.to(servicesTitle, {
-    scrollTrigger: {
-      trigger: servicesSection,
-      start: 'top 90%',
-      end: 'top 20%',
-      toggleActions: 'play reverse play reverse',
-      scrub: 1
-    },
-    y: 0,
-    opacity: 1,
-    duration: 0.8
-  });
+    gsap.to(servicesTitle, {
+      scrollTrigger: {
+        trigger: servicesSection,
+        start: 'top 85%',
+        once: true
+      },
+      y: 0,
+      opacity: 1,
+      duration: 0.7,
+      ease: 'power2.out'
+    });
+  }
 
   // Animate each service card
   const serviceCards = document.querySelectorAll('.service-card');
@@ -163,14 +174,12 @@ export const initializeHomeAnimations = (refs) => {
       scrollTrigger: {
         trigger: card,
         start: 'top 90%',
-        end: 'top 20%',
-        scrub: 1,
-        toggleActions: 'play reverse play reverse'
+        once: true
       },
       x: 0,
       opacity: 1,
       scale: 1,
-      duration: 1.5,
+      duration: 1.2,
       ease: 'power2.out'
     });
   });
