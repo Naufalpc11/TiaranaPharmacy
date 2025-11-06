@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
 class GeminiChatController extends Controller
@@ -73,28 +72,27 @@ class GeminiChatController extends Controller
 
         $user = $request->user();
 
-        if (($validated['conversation_id'] ?? null) && ! $user) {
-            throw ValidationException::withMessages([
-                'conversation_id' => 'Silakan login untuk melanjutkan percakapan yang tersimpan.',
-            ]);
-        }
-
         $conversation = null;
         $model = config('services.gemini.model', 'gemini-1_5-flash');
 
-        if ($user && ($conversationId = $validated['conversation_id'] ?? null)) {
+        if ($conversationId = $validated['conversation_id'] ?? null) {
             /** @var ChatConversation|null $conversation */
-            $conversation = $user->chatConversations()->find($conversationId);
+            $conversation = ChatConversation::query()->find($conversationId);
 
             if (! $conversation) {
+                abort(Response::HTTP_NOT_FOUND, 'Percakapan tidak ditemukan.');
+            }
+
+            if ($conversation->user_id && (! $user || $conversation->user_id !== $user->id)) {
                 abort(Response::HTTP_FORBIDDEN, 'Percakapan tidak ditemukan atau bukan milik Anda.');
             }
         }
 
         $latestUserMessage = $this->extractLatestUserMessage(collect($validated['messages']));
 
-        if (! $conversation && $user) {
-            $conversation = $user->chatConversations()->create([
+        if (! $conversation) {
+            $conversation = ChatConversation::create([
+                'user_id' => $user?->id,
                 'title' => $latestUserMessage ? Str::limit($latestUserMessage['content'], 80) : 'Percakapan baru',
                 'model' => $model,
                 'last_interacted_at' => now(),
@@ -111,6 +109,8 @@ class GeminiChatController extends Controller
 
             abort(Response::HTTP_BAD_GATEWAY, 'Maaf, asisten sedang sibuk. Coba beberapa saat lagi.');
         }
+
+        $assistantReply = $this->sanitizeReply($assistantReply);
 
         if ($conversation && $latestUserMessage) {
             $conversation->messages()->create([
@@ -145,6 +145,21 @@ class GeminiChatController extends Controller
                 'reply' => $assistantReply,
                 'conversation_id' => $conversation?->id,
             ],
+        ]);
+    }
+
+    public function destroy(Request $request, ChatConversation $conversation): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($conversation->user_id && (! $user || $conversation->user_id !== $user->id)) {
+            abort(Response::HTTP_FORBIDDEN, 'Percakapan tidak ditemukan atau bukan milik Anda.');
+        }
+
+        $conversation->delete();
+
+        return response()->json([
+            'message' => 'Percakapan dihapus.',
         ]);
     }
 
@@ -232,5 +247,17 @@ class GeminiChatController extends Controller
         if (! $user || $conversation->user_id !== $user->id) {
             abort(Response::HTTP_FORBIDDEN, 'Percakapan tidak ditemukan atau bukan milik Anda.');
         }
+    }
+
+    protected function sanitizeReply(string $text): string
+    {
+        $patterns = [
+            '/\*\*(.*?)\*\*/s',
+            '/__(.*?)__/s',
+        ];
+
+        $cleaned = preg_replace($patterns, '$1', $text) ?? $text;
+
+        return str_replace(['**', '__'], '', $cleaned);
     }
 }

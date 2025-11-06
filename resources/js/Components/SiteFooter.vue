@@ -3,14 +3,14 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Apotek Tiarana Farma</h3>
-                <p>Melayani dengan sepenuh hati sejak 2010</p>
+                <p>{{ tagline }}</p>
             </div>
             <div class="footer-section footer-section--contact">
                 <h3>Kontak</h3>
                 <ul>
-                    <li><i class="fas fa-phone"></i> 0812-3456-7890</li>
-                    <li><i class="fas fa-envelope"></i> tiaranafarma@gmail.com</li>
-                    <li><i class="fas fa-map-marker-alt"></i> Jl. Sepinggan Baru</li>
+                    <li><i class="fas fa-phone"></i> {{ contact.phone }}</li>
+                    <li><i class="fas fa-envelope"></i> {{ contact.email }}</li>
+                    <li><i class="fas fa-map-marker-alt"></i> {{ contact.address }}</li>
                     <li class="contact-link">
                         <i class="fas fa-bug"></i>
                         <a href="/report-bug">Laporkan Bug</a>
@@ -20,16 +20,40 @@
             <div class="footer-section">
                 <h3>Jam Operasional</h3>
                 <ul>
-                    <li>Senin - Sabtu: 08:00 - 22:00</li>
-                    <li>Minggu: 09:00 - 22:00</li>
+                    <li>{{ hours.weekday }}</li>
+                    <li>{{ hours.weekend }}</li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Ikuti Kami</h3>
                 <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                    <a
+                        :href="socialLinks.facebook || '#'"
+                        class="social-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Facebook Tiarana Pharmacy"
+                    >
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a
+                        :href="socialLinks.instagram || '#'"
+                        class="social-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instagram Tiarana Pharmacy"
+                    >
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a
+                        :href="socialLinks.whatsapp || '#'"
+                        class="social-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="WhatsApp Tiarana Pharmacy"
+                    >
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -40,7 +64,17 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
 const currentYear = new Date().getFullYear();
+const page = usePage();
+
+const footer = computed(() => page.props.footer ?? {});
+const tagline = computed(() => footer.value.tagline ?? '');
+const contact = computed(() => footer.value.contact ?? {});
+const hours = computed(() => footer.value.hours ?? {});
+const socialLinks = computed(() => footer.value.social_links ?? {});
 </script>
 
 <style lang="scss" scoped>

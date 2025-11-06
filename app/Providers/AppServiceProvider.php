@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\FooterContentService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -19,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(FooterContentService $footerContentService): void
     {
         Inertia::share([
             'auth' => fn () => [
@@ -29,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
                     'email' => $user->email,
                 ]),
             ],
+            'footer' => fn () => $footerContentService->get(),
         ]);
     }
 }

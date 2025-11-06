@@ -77,12 +77,19 @@
         <div class="section-container">
           <h2 id="misi" class="section-title">{{ mission.title }}</h2>
           <div class="values-grid">
-            <MissionCard
-              v-for="missionItem in mission.items"
-              :key="`${missionItem.title}-${missionItem.description}`"
-              :title="missionItem.title"
-              :description="missionItem.description"
-            />
+            <div
+              v-for="(rowItems, rowIndex) in missionRows"
+              :key="`mission-row-${rowIndex}`"
+              class="values-grid__row"
+              :class="`values-grid__row--${rowItems.length}`"
+            >
+              <MissionCard
+                v-for="missionItem in rowItems"
+                :key="`${missionItem.title}-${missionItem.description}`"
+                :title="missionItem.title"
+                :description="missionItem.description"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -368,6 +375,34 @@ const mission = computed(() => {
     title: data.title ?? 'Misi',
     items
   }
+})
+
+const missionRows = computed(() => {
+  const items = mission.value.items ?? []
+  const total = items.length
+
+  if (!total) {
+    return []
+  }
+
+  if (total === 4) {
+    return [items.slice(0, 2), items.slice(2, 4)]
+  }
+
+  if (total === 5) {
+    return [items.slice(0, 3), items.slice(3, 5)]
+  }
+
+  if (total === 7) {
+    return [items.slice(0, 3), items.slice(3, 6), items.slice(6, 7)]
+  }
+
+  const rows = []
+  for (let index = 0; index < total; index += 3) {
+    rows.push(items.slice(index, index + 3))
+  }
+
+  return rows
 })
 
 const history = computed(() => {

@@ -6,18 +6,7 @@
           <h1 id="chatbot-title">Tiarana Health Assistant</h1>
           <p>
             Konsultasikan pertanyaan seputar kesehatan, obat-obatan, dan layanan apotek secara instan.
-            Anda dapat langsung bertanya tanpa akun, dan login bila ingin menyimpan riwayat percakapan.
           </p>
-          <div class="chatbot-hero__meta">
-            <div class="chatbot-hero__badge">
-              <i class="fa fa-robot" aria-hidden="true"></i>
-              Didukung Gemini AI
-            </div>
-            <div class="chatbot-hero__badge">
-              <i class="fa fa-shield-heart" aria-hidden="true"></i>
-              Fokus pada keamanan pasien
-            </div>
-          </div>
         </div>
       </section>
 
@@ -165,11 +154,11 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import axios from 'axios'
-import MainLayout from '../Layouts/MainLayout.vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import Button from '../Components/Button.vue'
+import MainLayout from '../Layouts/MainLayout.vue'
 
 const page = usePage()
 const isAuthenticated = computed(() => Boolean(page.props.auth?.user))
@@ -207,6 +196,82 @@ watch(
   }
 )
 
+const conversationStorageKey = 'chatbotConversationId'
+
+const readStoredConversationId = () => {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  return window.sessionStorage.getItem(conversationStorageKey)
+}
+
+const writeStoredConversationId = (id) => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  if (!id) {
+    window.sessionStorage.removeItem(conversationStorageKey)
+    return
+  }
+
+  window.sessionStorage.setItem(conversationStorageKey, String(id))
+}
+
+const deleteConversationOnServer = async (id) => {
+  if (!id) {
+    return false
+  }
+
+  try {
+    await axios.delete(`/api/chatbot/conversations/${id}`)
+    return true
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return true
+    }
+
+    console.error('Gagal menghapus percakapan', error)
+    return false
+  }
+}
+
+const clearStoredConversation = async () => {
+  const storedId = readStoredConversationId()
+
+  if (!storedId) {
+    return
+  }
+
+  const wasDeleted = await deleteConversationOnServer(storedId)
+
+  if (wasDeleted) {
+    writeStoredConversationId(null)
+  }
+}
+
+const discardActiveConversation = async () => {
+  const conversationIds = new Set()
+
+  if (conversationId.value) {
+    conversationIds.add(String(conversationId.value))
+  }
+
+  const storedId = readStoredConversationId()
+  if (storedId) {
+    conversationIds.add(storedId)
+  }
+
+  conversationId.value = null
+
+  for (const id of conversationIds) {
+    await deleteConversationOnServer(id)
+  }
+
+  writeStoredConversationId(null)
+}
+
 const formatConversationTimestamp = (value) => {
   if (!value) {
     return ''
@@ -230,12 +295,15 @@ const resetState = () => {
   inputMessage.value = ''
 }
 
-const startNewConversation = () => {
+const startNewConversation = async () => {
   if (isLoading.value || isLoadingConversation.value) {
     return
   }
 
+  await discardActiveConversation()
   resetState()
+
+  await fetchConversations()
 }
 
 const fetchConversations = async () => {
@@ -351,6 +419,7 @@ const sendMessage = async () => {
       const isNewConversation = !conversationId.value
 
       conversationId.value = newConversationId
+      writeStoredConversationId(newConversationId)
 
       if (isAuthenticated.value && isNewConversation) {
         await fetchConversations()
@@ -379,8 +448,9 @@ const sendMessage = async () => {
   }
 }
 
-onMounted(() => {
-  fetchConversations()
+onMounted(async () => {
+  await clearStoredConversation()
+  await fetchConversations()
   scrollToBottom()
 })
 </script>

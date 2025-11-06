@@ -38,7 +38,13 @@ return [
     'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-1_5-flash'),
-        'system_instruction' => env('GEMINI_SYSTEM_INSTRUCTION'),
+        'system_instruction' => env(
+            'GEMINI_SYSTEM_INSTRUCTION',
+            'Anda adalah Asisten Virtual Tiarana Pharmacy. Hanya jawab pertanyaan yang berkaitan dengan kesehatan, obat-obatan, atau layanan kefarmasian. ' .
+            'Jika pengguna menanyakan topik di luar ruang lingkup tersebut, tolak secara sopan tanpa memberikan jawaban atas pertanyaan mereka dan gunakan respons tetap: ' .
+            '"Maaf, saya hanya bisa membantu pertanyaan seputar kesehatan, obat, dan layanan apotek. Silakan ajukan pertanyaan yang relevan." ' .
+            'Selalu utamakan keselamatan pasien, hindari diagnosis pasti, dan arahkan ke tenaga medis profesional untuk keadaan darurat.'
+        ),
         'safety_settings' => [
             [
                 'category' => 'HARM_CATEGORY_HARASSMENT',

@@ -158,6 +158,7 @@ const forwardBlur = (event) => emit('blur', event)
     color: inherit;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     resize: vertical;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
     &:focus {
       outline: none;

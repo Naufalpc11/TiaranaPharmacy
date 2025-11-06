@@ -75,6 +75,8 @@ Route::get('/artikel/{slug}', [ArticleController::class, 'show'])->name('article
 Route::prefix('api')->group(function () {
     Route::post('chatbot/message', [GeminiChatController::class, 'sendMessage'])
         ->name('api.chatbot.message');
+    Route::delete('chatbot/conversations/{conversation}', [GeminiChatController::class, 'destroy'])
+        ->name('api.chatbot.conversations.destroy');
 
     Route::middleware('auth')->group(function () {
         Route::get('chatbot/conversations', [GeminiChatController::class, 'index'])
