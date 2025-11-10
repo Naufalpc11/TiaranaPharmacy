@@ -75,7 +75,7 @@
               role="note"
             >
               <i class="fa fa-circle-info" aria-hidden="true"></i>
-              Login untuk menyimpan dan mengakses riwayat percakapan Anda.
+              Percakapan Anda bersifat privat dan tidak akan bocor ke pihak mana pun.
             </div>
           </header>
 

@@ -23,6 +23,23 @@
           />
         </svg>
       </template>
+      <template v-else-if="variant === 'error'">
+        <svg
+          width="64"
+          height="64"
+          viewBox="0 0 88 88"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="44" cy="44" r="41.5" stroke="#C62828" stroke-width="5" />
+          <path
+            d="M55 33L33 55M33 33L55 55"
+            stroke="#C62828"
+            stroke-width="6"
+            stroke-linecap="round"
+          />
+        </svg>
+      </template>
       <template v-else>
         <svg
           width="64"
@@ -45,7 +62,7 @@
 
     <div class="feedback-dialog__actions" :class="`feedback-dialog__actions--${variant}`">
       <Button
-        :variant="variant === 'success' ? 'success' : 'success'"
+        :variant="primaryButtonVariant"
         size="lg"
         @click="$emit('primary')"
       >
@@ -64,13 +81,14 @@
 </template>
 
 <script setup>
-import Button from './Button.vue';
+import { computed } from 'vue'
+import Button from './Button.vue'
 
-defineProps({
+const props = defineProps({
   variant: {
     type: String,
     default: 'success',
-    validator: (value) => ['success', 'confirm'].includes(value),
+    validator: (value) => ['success', 'confirm', 'error'].includes(value),
   },
   title: {
     type: String,
@@ -88,6 +106,16 @@ defineProps({
     type: String,
     default: 'Batal',
   },
+})
+
+const primaryButtonVariant = computed(() => {
+  if (props.variant === 'error') {
+    return 'danger'
+  }
+  if (props.variant === 'success') {
+    return 'success'
+  }
+  return 'primary'
 })
 
 defineEmits(['primary', 'secondary'])
@@ -123,7 +151,8 @@ defineEmits(['primary', 'secondary'])
   height: 64px;
 }
 
-.feedback-dialog__icon--confirm {
+.feedback-dialog__icon--confirm,
+.feedback-dialog__icon--error {
   width: 92px;
   height: 92px;
   border-radius: 50%;
@@ -132,9 +161,14 @@ defineEmits(['primary', 'secondary'])
   box-sizing: border-box;
 }
 
-.feedback-dialog__icon--confirm svg {
+.feedback-dialog__icon--confirm svg,
+.feedback-dialog__icon--error svg {
   width: 64px;
   height: 64px;
+}
+
+.feedback-dialog__icon--error {
+  border-color: rgba(198, 40, 40, 0.75);
 }
 
 .feedback-dialog__content {
@@ -176,8 +210,14 @@ defineEmits(['primary', 'secondary'])
 }
 
 .feedback-dialog__actions--success,
-.feedback-dialog__actions--confirm {
+.feedback-dialog__actions--confirm,
+.feedback-dialog__actions--error {
   justify-content: flex-end;
+}
+
+.feedback-dialog--error {
+  border-color: rgba(198, 40, 40, 0.2);
+  box-shadow: 0 35px 80px rgba(198, 40, 40, 0.18);
 }
 
 @media (max-width: 900px) {

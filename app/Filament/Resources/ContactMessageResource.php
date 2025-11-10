@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TernaryFilter;
@@ -97,6 +98,15 @@ class ContactMessageResource extends Resource
                     ->wrap()
                     ->limit(60)
                     ->toggleable(),
+                BadgeColumn::make('status_badge')
+                    ->label('Status')
+                    ->getStateUsing(
+                        fn (ContactMessage $record): string => $record->is_reviewed ? 'Sudah dibaca' : 'Belum dibaca'
+                    )
+                    ->colors([
+                        'success' => fn (?string $state): bool => $state === 'Sudah dibaca',
+                        'warning' => fn (?string $state): bool => $state === 'Belum dibaca',
+                    ]),
                 ToggleColumn::make('is_reviewed')
                     ->label('Sudah dibaca')
                     ->sortable()
@@ -141,6 +151,15 @@ class ContactMessageResource extends Resource
                     ->requiresConfirmation()
                     ->action(function (ContactMessage $record): void {
                         $record->update(['is_reviewed' => true]);
+                    }),
+                Actions\Action::make('markAsUnread')
+                    ->label('Tandai Belum Dibaca')
+                    ->icon('heroicon-m-arrow-uturn-left')
+                    ->color('gray')
+                    ->visible(fn (ContactMessage $record): bool => $record->is_reviewed)
+                    ->requiresConfirmation()
+                    ->action(function (ContactMessage $record): void {
+                        $record->update(['is_reviewed' => false]);
                     }),
             ])
             ->bulkActions([

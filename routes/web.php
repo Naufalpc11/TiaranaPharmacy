@@ -85,3 +85,9 @@ Route::prefix('api')->group(function () {
             ->name('api.chatbot.conversations.show');
     });
 });
+
+Route::fallback(function () {
+    return Inertia::render('NotFound')
+        ->toResponse(request())
+        ->setStatusCode(404);
+});

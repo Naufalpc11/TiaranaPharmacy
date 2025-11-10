@@ -195,6 +195,7 @@
                 :title="contact.title"
                 :lines="contact.lines"
                 :copy-text="contact.copyText"
+                :copyable="contact.copyable"
                 @copy="copyContact"
               />
             </div>
@@ -327,7 +328,8 @@ const defaultLocation = {
       iconImageUrl: null,
       title: 'Jam Operasional',
       lines: ['Senin-Sabtu: 08.00-21.00 WITA', 'Minggu: 09.00-20.00 WITA'],
-      copyText: 'Senin-Sabtu: 08.00-21.00 WITA\nMinggu: 09.00-20.00 WITA'
+      copyText: '',
+      copyable: false
     }
   ]
 }
@@ -475,13 +477,22 @@ const location = computed(() => {
     Array.isArray(data.contactDetails) && data.contactDetails.length
       ? data.contactDetails
       : defaultLocation.contactDetails
-  const contactDetails = contactSource.map((detail, index) => ({
-    icon: detail.icon ?? '',
-    iconImageUrl: detail.iconImageUrl ?? detail.icon_image_url ?? '',
-    title: detail.title ?? `Kontak ${index + 1}`,
-    lines: Array.isArray(detail.lines) ? detail.lines : [],
-    copyText: detail.copyText ?? ''
-  }))
+  const contactDetails = contactSource.map((detail, index) => {
+    const title = detail.title ?? `Kontak ${index + 1}`
+    const lines = Array.isArray(detail.lines) ? detail.lines : []
+    const titleSuggestsSchedule = title.toLowerCase().includes('operasional')
+    const hasExplicitCopyable = Object.prototype.hasOwnProperty.call(detail, 'copyable')
+    const copyable = hasExplicitCopyable ? Boolean(detail.copyable) : !titleSuggestsSchedule
+
+    return {
+      icon: detail.icon ?? '',
+      iconImageUrl: detail.iconImageUrl ?? detail.icon_image_url ?? '',
+      title,
+      lines,
+      copyText: copyable ? detail.copyText ?? '' : '',
+      copyable
+    }
+  })
 
   return {
     title: data.title ?? defaultLocation.title,

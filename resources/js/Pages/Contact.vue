@@ -104,6 +104,14 @@
               primary-label="Selesai"
               @primary="closeSuccessDialog"
             />
+            <FeedbackDialog
+              v-else-if="isErrorDialogOpen"
+              variant="error"
+              :title="errorDialog.title"
+              :message="errorDialog.message"
+              primary-label="Tutup"
+              @primary="closeErrorDialog"
+            />
           </div>
         </div>
       </transition>
@@ -112,7 +120,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
 import Button from '../Components/Button.vue'
 import FeedbackDialog from '../Components/FeedbackDialog.vue'
@@ -135,11 +143,42 @@ const page = usePage()
 
 const isConfirmDialogOpen = ref(false)
 const isSuccessDialogOpen = ref(false)
-const isDialogVisible = computed(() => isConfirmDialogOpen.value || isSuccessDialogOpen.value)
+const errorDialog = ref({
+  title: '',
+  message: '',
+})
+const isErrorDialogOpen = ref(false)
+
+const isDialogVisible = computed(
+  () => isConfirmDialogOpen.value || isSuccessDialogOpen.value || isErrorDialogOpen.value
+)
 
 if (page.props.flash?.contact_submitted) {
   isSuccessDialogOpen.value = true
 }
+
+const showErrorDialog = (message) => {
+  errorDialog.value = {
+    title: 'Gagal mengirim pesan',
+    message: message || 'Sistem sedang mengalami kendala. Silakan coba kembali dalam beberapa saat.',
+  }
+  isErrorDialogOpen.value = true
+}
+
+const closeErrorDialog = () => {
+  isErrorDialogOpen.value = false
+  form.clearErrors('form')
+}
+
+watch(
+  () => page.props.flash?.contact_error,
+  (message) => {
+    if (message) {
+      showErrorDialog(message)
+    }
+  },
+  { immediate: true }
+)
 
 const handleSubmitIntent = () => {
   form.clearErrors()
@@ -197,6 +236,11 @@ const confirmSubmission = () => {
       form.reset()
       isSuccessDialogOpen.value = true
     },
+    onError: (errors) => {
+      if (errors?.form) {
+        showErrorDialog(errors.form)
+      }
+    },
   })
 }
 
@@ -207,6 +251,8 @@ const closeSuccessDialog = () => {
 const handleBackdropClick = () => {
   if (isSuccessDialogOpen.value) {
     closeSuccessDialog()
+  } else if (isErrorDialogOpen.value) {
+    closeErrorDialog()
   } else if (isConfirmDialogOpen.value) {
     closeConfirmDialog()
   }

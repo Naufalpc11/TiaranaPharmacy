@@ -139,6 +139,14 @@
               primary-label="Selesai"
               @primary="closeSuccessDialog"
             />
+            <FeedbackDialog
+              v-else-if="isErrorDialogOpen"
+              variant="error"
+              :title="errorDialog.title"
+              :message="errorDialog.message"
+              primary-label="Tutup"
+              @primary="closeErrorDialog"
+            />
           </div>
         </div>
       </transition>
@@ -170,7 +178,14 @@ const screenshotInput = ref(null)
 
 const isConfirmDialogOpen = ref(false)
 const isSuccessDialogOpen = ref(false)
-const isDialogVisible = computed(() => isConfirmDialogOpen.value || isSuccessDialogOpen.value)
+const errorDialog = ref({
+  title: '',
+  message: '',
+})
+const isErrorDialogOpen = ref(false)
+const isDialogVisible = computed(
+  () => isConfirmDialogOpen.value || isSuccessDialogOpen.value || isErrorDialogOpen.value
+)
 
 if (page.props.flash?.bug_report_submitted) {
   isSuccessDialogOpen.value = true
@@ -183,6 +198,29 @@ watch(
       isSuccessDialogOpen.value = true
     }
   }
+)
+
+const showErrorDialog = (message) => {
+  errorDialog.value = {
+    title: 'Gagal mengirim laporan',
+    message: message || 'Terjadi kendala pada sistem. Silakan coba kembali beberapa saat lagi.',
+  }
+  isErrorDialogOpen.value = true
+}
+
+const closeErrorDialog = () => {
+  isErrorDialogOpen.value = false
+  form.clearErrors('form')
+}
+
+watch(
+  () => page.props.flash?.bug_report_error,
+  (message) => {
+    if (message) {
+      showErrorDialog(message)
+    }
+  },
+  { immediate: true }
 )
 
 const resetScreenshot = () => {
@@ -324,9 +362,12 @@ const confirmSubmission = () => {
       resetScreenshot()
       isSuccessDialogOpen.value = true
     },
-    onError: () => {
-      if (form.errors.screenshot) {
-        screenshotError.value = form.errors.screenshot
+    onError: (errors) => {
+      if (errors?.screenshot) {
+        screenshotError.value = errors.screenshot
+      }
+      if (errors?.form) {
+        showErrorDialog(errors.form)
       }
     },
   })
@@ -339,6 +380,8 @@ const closeSuccessDialog = () => {
 const handleBackdropClick = () => {
   if (isSuccessDialogOpen.value) {
     closeSuccessDialog()
+  } else if (isErrorDialogOpen.value) {
+    closeErrorDialog()
   } else if (isConfirmDialogOpen.value) {
     closeConfirmDialog()
   }

@@ -11,7 +11,7 @@
     </div>
 
     <button
-      v-if="copyText"
+      v-if="copyText && copyable"
       type="button"
       class="copy-btn"
       :aria-label="`Salin ${title}`"
@@ -43,6 +43,10 @@ defineProps({
   copyText: {
     type: String,
     default: ''
+  },
+  copyable: {
+    type: Boolean,
+    default: true
   }
 })
 

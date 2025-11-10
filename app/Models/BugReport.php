@@ -10,6 +10,10 @@ class BugReport extends Model
 {
     use Prunable;
 
+    public const STATUS_NEW = 'baru';
+    public const STATUS_IN_PROGRESS = 'proses';
+    public const STATUS_DONE = 'selesai';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -19,6 +23,7 @@ class BugReport extends Model
         'subject',
         'email',
         'description',
+        'status',
         'screenshot_path',
         'screenshot_original_name',
         'is_resolved',
@@ -33,6 +38,7 @@ class BugReport extends Model
     protected $casts = [
         'is_resolved' => 'boolean',
         'resolved_at' => 'datetime',
+        'status' => 'string',
     ];
 
     /**
@@ -49,8 +55,21 @@ class BugReport extends Model
     protected static function booted(): void
     {
         static::saving(function (self $report) {
+            if ($report->isDirty('status')) {
+                $report->is_resolved = $report->status === self::STATUS_DONE;
+                $report->resolved_at = $report->is_resolved ? now() : null;
+            }
+
             if ($report->isDirty('is_resolved')) {
                 $report->resolved_at = $report->is_resolved ? now() : null;
+
+                if ($report->is_resolved && $report->status !== self::STATUS_DONE) {
+                    $report->status = self::STATUS_DONE;
+                }
+
+                if (! $report->is_resolved && $report->status === self::STATUS_DONE) {
+                    $report->status = self::STATUS_IN_PROGRESS;
+                }
             }
         });
 
@@ -59,5 +78,19 @@ class BugReport extends Model
                 Storage::disk('public')->delete($report->screenshot_path);
             }
         });
+    }
+
+    /**
+     * Status labels for UI options.
+     *
+     * @return array<string, string>
+     */
+    public static function statusLabels(): array
+    {
+        return [
+            self::STATUS_NEW => 'Baru',
+            self::STATUS_IN_PROGRESS => 'Proses',
+            self::STATUS_DONE => 'Selesai',
+        ];
     }
 }
