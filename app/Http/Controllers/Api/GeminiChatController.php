@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
+use App\Services\MedicationCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -14,6 +15,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GeminiChatController extends Controller
 {
+    protected MedicationCatalog $medicationCatalog;
+
+    public function __construct(MedicationCatalog $medicationCatalog)
+    {
+        $this->medicationCatalog = $medicationCatalog;
+    }
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -55,6 +62,7 @@ class GeminiChatController extends Controller
                     'id' => $message->id,
                     'role' => $message->role,
                     'content' => $message->content,
+                    'metadata' => $message->metadata,
                     'created_at' => optional($message->created_at)->toIso8601String(),
                 ]),
             ],
@@ -99,6 +107,23 @@ class GeminiChatController extends Controller
             ]);
         }
 
+        $ruleBasedResponse = $this->handleStockIntent($latestUserMessage)
+            ?? $this->handleMedicationIntent($latestUserMessage);
+
+        if ($ruleBasedResponse) {
+            $payload = $this->persistAndTransformResponse(
+                $conversation,
+                $latestUserMessage,
+                $ruleBasedResponse['content'],
+                $ruleBasedResponse['metadata'] ?? [],
+                $model
+            );
+
+            return response()->json([
+                'data' => $payload,
+            ]);
+        }
+
         $payload = $this->buildGeminiPayload($validated['messages']);
         $responseData = $this->callGemini($payload, $model);
 
@@ -112,39 +137,16 @@ class GeminiChatController extends Controller
 
         $assistantReply = $this->sanitizeReply($assistantReply);
 
-        if ($conversation && $latestUserMessage) {
-            $conversation->messages()->create([
-                'role' => 'user',
-                'content' => $latestUserMessage['content'],
-            ]);
-        }
-
-        if ($conversation) {
-            $conversation->messages()->create([
-                'role' => 'assistant',
-                'content' => $assistantReply,
-                'metadata' => [
-                    'model' => $model,
-                ],
-            ]);
-
-            $conversation->forceFill([
-                'model' => $model,
-                'last_interacted_at' => now(),
-            ]);
-
-            if ($latestUserMessage && ! $conversation->title) {
-                $conversation->title = Str::limit($latestUserMessage['content'], 80);
-            }
-
-            $conversation->save();
-        }
+        $payload = $this->persistAndTransformResponse(
+            $conversation,
+            $latestUserMessage,
+            $assistantReply,
+            [],
+            $model
+        );
 
         return response()->json([
-            'data' => [
-                'reply' => $assistantReply,
-                'conversation_id' => $conversation?->id,
-            ],
+            'data' => $payload,
         ]);
     }
 
@@ -259,5 +261,148 @@ class GeminiChatController extends Controller
         $cleaned = preg_replace($patterns, '$1', $text) ?? $text;
 
         return str_replace(['**', '__'], '', $cleaned);
+    }
+
+    protected function handleStockIntent(?array $latestUserMessage): ?array
+    {
+        if (! $latestUserMessage) {
+            return null;
+        }
+
+        $text = Str::lower($latestUserMessage['content'] ?? '');
+        $keywords = [
+            'stok',
+            'stock',
+            'tersedia',
+            'ketersediaan',
+            'ready stock',
+            'ada obat apa',
+            'obat apa saja',
+            'obat tersedia',
+            'ketersediaan obat',
+            'available medicine',
+            'medicine list',
+        ];
+
+        $isStockQuestion = collect($keywords)->contains(function (string $keyword) use ($text) {
+            return Str::contains($text, $keyword);
+        });
+
+        if (! $isStockQuestion) {
+            return null;
+        }
+
+        return [
+            'content' => 'Untuk memastikan ketersediaan stok terbaru, silakan hubungi apoteker kami melalui halaman Kontak. Tim kami akan melakukan pengecekan fisik sebelum memberikan rekomendasi pembelian.',
+            'metadata' => [
+                'intent' => 'contact-pharmacist',
+                'cta' => $this->buildContactCta(),
+                'source' => 'contact-policy',
+            ],
+        ];
+    }
+
+    protected function handleMedicationIntent(?array $latestUserMessage): ?array
+    {
+        if (! $latestUserMessage) {
+            return null;
+        }
+
+        $medication = $this->medicationCatalog->matchByQuery($latestUserMessage['content'] ?? '');
+
+        if (! $medication) {
+            return null;
+        }
+
+        $details = $this->medicationCatalog->formatDetails($medication);
+
+        return [
+            'content' => $this->buildMedicationReplyText($details),
+            'metadata' => [
+                'intent' => 'medication-recommendation',
+                'medication' => $details,
+                'cta' => $this->buildContactCta(),
+                'source' => 'catalog',
+            ],
+        ];
+    }
+
+    protected function buildMedicationReplyText(array $details): string
+    {
+        $parts = [];
+        $parts[] = sprintf(
+            '%s adalah %s berbentuk %s. %s',
+            $details['name'],
+            Str::lower($details['category']),
+            $details['form'],
+            $details['how_it_works']
+        );
+
+        if (! empty($details['dosage'])) {
+            $dosageLines = collect($details['dosage'])
+                ->map(fn ($value, $key) => sprintf('- %s: %s', $key, $value))
+                ->implode("\n");
+            $parts[] = "Aturan pakai:\n{$dosageLines}";
+        }
+
+        if (! empty($details['warnings'])) {
+            $warningLines = collect($details['warnings'])
+                ->map(fn (string $warning) => '- '.$warning)
+                ->implode("\n");
+            $parts[] = "Perhatian:\n{$warningLines}";
+        }
+
+        $parts[] = 'Untuk pembelian dan konfirmasi stok, hubungi apoteker melalui tombol Kontak.';
+
+        return implode("\n\n", array_filter($parts));
+    }
+
+    protected function buildContactCta(): array
+    {
+        return [
+            'label' => 'Hubungi Apoteker',
+            'url' => url('/contact'),
+        ];
+    }
+
+    protected function persistAndTransformResponse(
+        ChatConversation $conversation,
+        ?array $latestUserMessage,
+        string $assistantReply,
+        array $metadata,
+        string $model
+    ): array {
+        if ($latestUserMessage) {
+            $conversation->messages()->create([
+                'role' => 'user',
+                'content' => $latestUserMessage['content'],
+            ]);
+        }
+
+        $conversation->messages()->create([
+            'role' => 'assistant',
+            'content' => $assistantReply,
+            'metadata' => array_merge(['model' => $model], $metadata ?: []),
+        ]);
+
+        $conversation->forceFill([
+            'model' => $model,
+            'last_interacted_at' => now(),
+        ]);
+
+        if ($latestUserMessage && ! $conversation->title) {
+            $conversation->title = Str::limit($latestUserMessage['content'], 80);
+        }
+
+        $conversation->save();
+
+        return [
+            'reply' => $assistantReply,
+            'message' => [
+                'content' => $assistantReply,
+                'metadata' => $metadata,
+            ],
+            'conversation_id' => $conversation->id,
+        ];
     }
 }
