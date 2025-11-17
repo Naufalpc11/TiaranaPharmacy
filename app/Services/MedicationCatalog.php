@@ -143,7 +143,7 @@ class MedicationCatalog
             return null;
         }
 
-        return route('medications.dataset.show', ['slug' => $medication['slug']]);
+        return route('medications.dataset.show', ['slug' => $medication['slug']], false);
     }
 
     public function findBySlug(string $slug): ?array

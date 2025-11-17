@@ -10,53 +10,7 @@
         </div>
       </section>
 
-      <section class="chatbot-shell" :class="{ 'chatbot-shell--full': !isAuthenticated }">
-        <aside
-          v-if="isAuthenticated"
-          class="chatbot-sidebar"
-          aria-label="Riwayat percakapan"
-        >
-          <header class="chatbot-sidebar__header">
-            <h2>Riwayat Anda</h2>
-            <Button
-              size="sm"
-              variant="primary"
-              :disabled="isLoading || isLoadingConversation"
-              @click="startNewConversation"
-            >
-              <template #icon>
-                <i class="fa fa-plus" aria-hidden="true"></i>
-              </template>
-              Percakapan Baru
-            </Button>
-          </header>
-
-          <div class="chatbot-sidebar__list" role="list">
-            <button
-              v-for="conversation in conversations"
-              :key="conversation.id"
-              type="button"
-              class="chatbot-sidebar__item"
-              :class="{ 'chatbot-sidebar__item--active': conversation.id === conversationId }"
-              :disabled="isLoadingConversation && conversation.id !== conversationId"
-              @click="loadConversation(conversation.id)"
-            >
-              <span class="chatbot-sidebar__title">
-                {{ conversation.title || 'Percakapan tanpa judul' }}
-              </span>
-              <span class="chatbot-sidebar__time">
-                {{ formatConversationTimestamp(conversation.last_interacted_at) }}
-              </span>
-            </button>
-            <p
-              v-if="!conversations.length && !isLoadingConversation"
-              class="chatbot-sidebar__empty"
-            >
-              Belum ada percakapan tersimpan. Mulai chat dan riwayat Anda akan muncul di sini.
-            </p>
-          </div>
-        </aside>
-
+      <section class="chatbot-shell">
         <div class="chatbot-main">
           <header class="chatbot-main__header">
             <div class="chatbot-main__title">
@@ -195,11 +149,9 @@ const welcomeMessage = {
 }
 
 const messages = ref([welcomeMessage])
-const conversations = ref([])
 const conversationId = ref(null)
 const inputMessage = ref('')
 const isLoading = ref(false)
-const isLoadingConversation = ref(false)
 const errorMessage = ref('')
 const messageContainerRef = ref(null)
 
@@ -235,168 +187,6 @@ watch(
     scrollToBottom()
   }
 )
-
-const conversationStorageKey = 'chatbotConversationId'
-
-const readStoredConversationId = () => {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  return window.sessionStorage.getItem(conversationStorageKey)
-}
-
-const writeStoredConversationId = (id) => {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  if (!id) {
-    window.sessionStorage.removeItem(conversationStorageKey)
-    return
-  }
-
-  window.sessionStorage.setItem(conversationStorageKey, String(id))
-}
-
-const deleteConversationOnServer = async (id) => {
-  if (!id) {
-    return false
-  }
-
-  try {
-    await axios.delete(`/api/chatbot/conversations/${id}`)
-    return true
-  } catch (error) {
-    if (error.response?.status === 404) {
-      return true
-    }
-
-    console.error('Gagal menghapus percakapan', error)
-    return false
-  }
-}
-
-const clearStoredConversation = async () => {
-  const storedId = readStoredConversationId()
-
-  if (!storedId) {
-    return
-  }
-
-  const wasDeleted = await deleteConversationOnServer(storedId)
-
-  if (wasDeleted) {
-    writeStoredConversationId(null)
-  }
-}
-
-const discardActiveConversation = async () => {
-  const conversationIds = new Set()
-
-  if (conversationId.value) {
-    conversationIds.add(String(conversationId.value))
-  }
-
-  const storedId = readStoredConversationId()
-  if (storedId) {
-    conversationIds.add(storedId)
-  }
-
-  conversationId.value = null
-
-  for (const id of conversationIds) {
-    await deleteConversationOnServer(id)
-  }
-
-  writeStoredConversationId(null)
-}
-
-const formatConversationTimestamp = (value) => {
-  if (!value) {
-    return ''
-  }
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return ''
-  }
-
-  return new Intl.DateTimeFormat('id-ID', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(date)
-}
-
-const resetState = () => {
-  messages.value = [welcomeMessage]
-  conversationId.value = null
-  errorMessage.value = ''
-  inputMessage.value = ''
-}
-
-const startNewConversation = async () => {
-  if (isLoading.value || isLoadingConversation.value) {
-    return
-  }
-
-  await discardActiveConversation()
-  resetState()
-
-  await fetchConversations()
-}
-
-const fetchConversations = async () => {
-  if (!isAuthenticated.value) {
-    return
-  }
-
-  try {
-    isLoadingConversation.value = true
-    const { data } = await axios.get('/api/chatbot/conversations')
-    conversations.value = data?.data ?? []
-  } catch (error) {
-    console.error('Gagal memuat riwayat percakapan', error)
-  } finally {
-    isLoadingConversation.value = false
-  }
-}
-
-const loadConversation = async (id) => {
-  if (!isAuthenticated.value || !id) {
-    return
-  }
-
-  if (conversationId.value === id && messages.value.length > 1) {
-    return
-  }
-
-  try {
-    isLoadingConversation.value = true
-    errorMessage.value = ''
-    const { data } = await axios.get(`/api/chatbot/conversations/${id}`)
-    const loadedMessages = data?.data?.messages ?? []
-
-    if (loadedMessages.length === 0) {
-      messages.value = [welcomeMessage]
-    } else {
-      messages.value = loadedMessages.map((message) => ({
-        id: `conversation-${id}-${message.id}`,
-        role: message.role === 'model' ? 'assistant' : message.role,
-        content: message.content,
-        created_at: message.created_at,
-        metadata: message.metadata ?? null,
-      }))
-    }
-
-    conversationId.value = id
-  } catch (error) {
-    errorMessage.value = 'Tidak dapat memuat percakapan. Coba lagi beberapa saat.'
-  } finally {
-    isLoadingConversation.value = false
-    scrollToBottom()
-  }
-}
 
 const handleEnterKey = (event) => {
   if (event.shiftKey) {
@@ -460,17 +250,7 @@ const sendMessage = async () => {
     }
 
     if (data?.data?.conversation_id) {
-      const newConversationId = data.data.conversation_id
-      const isNewConversation = !conversationId.value
-
-      conversationId.value = newConversationId
-      writeStoredConversationId(newConversationId)
-
-      if (isAuthenticated.value && isNewConversation) {
-        await fetchConversations()
-      } else if (isAuthenticated.value) {
-        fetchConversations()
-      }
+      conversationId.value = data.data.conversation_id
     }
   } catch (error) {
     console.error('Kesalahan saat mengirim pesan', error)
@@ -494,9 +274,7 @@ const sendMessage = async () => {
   }
 }
 
-onMounted(async () => {
-  await clearStoredConversation()
-  await fetchConversations()
+onMounted(() => {
   scrollToBottom()
 })
 </script>
