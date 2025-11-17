@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\GeminiChatController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\MedicationImageController;
 use App\Models\Article;
 use App\Services\AboutPageContentService;
 use App\Services\HomePageContentService;
@@ -67,6 +68,10 @@ Route::post('/report-bug', [BugReportController::class, 'store'])->name('bug-rep
 Route::get('/chatbot', function () {
     return Inertia::render('Chatbot');
 })->name('chatbot');
+
+Route::get('/medication-images/{slug}', MedicationImageController::class)
+    ->where('slug', '[A-Za-z0-9\-_]+')
+    ->name('medications.dataset.show');
 
 // Route untuk halaman Artikel
 Route::get('/artikel', [ArticleController::class, 'index'])->name('articles.index');

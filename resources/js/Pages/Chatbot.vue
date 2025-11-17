@@ -95,7 +95,30 @@
                 ></i>
               </div>
               <div class="chat-message__bubble">
+                <figure
+                  v-if="getMessageImage(message)"
+                  class="chat-message__media"
+                >
+                  <img
+                    :src="getMessageImage(message)"
+                    :alt="getMessageImageAlt(message)"
+                    loading="lazy"
+                  />
+                </figure>
                 <p>{{ message.content }}</p>
+                <div
+                  v-if="getMessageCta(message)"
+                  class="chat-message__cta"
+                >
+                  <a
+                    class="chat-message__cta-button"
+                    :href="getMessageCta(message).url"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {{ getMessageCta(message).label || 'Hubungi Apoteker' }}
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -168,6 +191,7 @@ const welcomeMessage = {
   role: 'assistant',
   content:
     'Halo, saya asisten virtual Tiarana Pharmacy. Ceritakan gejala atau pertanyaan seputar kesehatan, obat, dan gaya hidup. Untuk kondisi darurat, segera hubungi tenaga medis.',
+  metadata: null,
 }
 
 const messages = ref([welcomeMessage])
@@ -188,6 +212,22 @@ const scrollToBottom = async () => {
     container.scrollTop = container.scrollHeight
   }
 }
+
+const getMessageImage = (message) => {
+  const medication = message?.metadata?.medication
+  if (!medication) {
+    return null
+  }
+
+  return medication.dataset_image_url || medication.image_url || null
+}
+
+const getMessageImageAlt = (message) => {
+  const name = message?.metadata?.medication?.name
+  return name ? `Foto ${name}` : 'Ilustrasi obat'
+}
+
+const getMessageCta = (message) => message?.metadata?.cta ?? null
 
 watch(
   () => messages.value.length,
@@ -345,6 +385,7 @@ const loadConversation = async (id) => {
         role: message.role === 'model' ? 'assistant' : message.role,
         content: message.content,
         created_at: message.created_at,
+        metadata: message.metadata ?? null,
       }))
     }
 
@@ -381,6 +422,7 @@ const sendMessage = async () => {
     role: 'user',
     content: trimmedMessage,
     created_at: new Date().toISOString(),
+    metadata: null,
   }
 
   messages.value = [...messages.value, userMessage]
@@ -401,7 +443,9 @@ const sendMessage = async () => {
       conversation_id: conversationId.value,
     })
 
-    const reply = data?.data?.reply
+    const responseMessage = data?.data?.message ?? null
+    const reply = responseMessage?.content ?? data?.data?.reply
+    const metadata = responseMessage?.metadata ?? null
 
     if (reply) {
       const assistantMessage = {
@@ -409,6 +453,7 @@ const sendMessage = async () => {
         role: 'assistant',
         content: reply,
         created_at: new Date().toISOString(),
+        metadata,
       }
 
       messages.value = [...messages.value, assistantMessage]
@@ -441,6 +486,7 @@ const sendMessage = async () => {
         content: 'Maaf, terjadi kesalahan saat menghubungi asisten. Coba kirim ulang pertanyaan Anda.',
         created_at: new Date().toISOString(),
         isError: true,
+        metadata: null,
       },
     ]
   } finally {
