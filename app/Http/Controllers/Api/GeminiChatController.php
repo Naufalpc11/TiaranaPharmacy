@@ -177,24 +177,40 @@ class GeminiChatController extends Controller
             $apiKey
         );
 
-        try {
-            $response = Http::timeout(20)
-                ->acceptJson()
-                ->asJson()
-                ->post($endpoint, $payload);
-        } catch (\Throwable $exception) {
-            report($exception);
+        $retryDelayMs = 600;
+        $deadline = microtime(true) + 10;
 
-            abort(Response::HTTP_BAD_GATEWAY, 'Tidak dapat menghubungi layanan Gemini saat ini.');
+        while (true) {
+            try {
+                $response = Http::timeout(20)
+                    ->acceptJson()
+                    ->asJson()
+                    ->post($endpoint, $payload);
+            } catch (\Throwable $exception) {
+                if (microtime(true) >= $deadline) {
+                    report($exception);
+
+                    abort(Response::HTTP_BAD_GATEWAY, 'Tidak dapat menghubungi layanan Gemini saat ini.');
+                }
+
+                usleep($retryDelayMs * 1000);
+                continue;
+            }
+
+            if ($response->successful()) {
+                return $response->json() ?? [];
+            }
+
+            $shouldRetry = in_array($response->status(), [429, 500, 502, 503, 504], true);
+
+            if (! $shouldRetry || microtime(true) >= $deadline) {
+                report(new \RuntimeException('Gemini API error: '.$response->body()));
+
+                abort(Response::HTTP_BAD_GATEWAY, 'Terjadi kesalahan saat menghubungkan ke Gemini.');
+            }
+
+            usleep($retryDelayMs * 1000);
         }
-
-        if ($response->failed()) {
-            report(new \RuntimeException('Gemini API error: '.$response->body()));
-
-            abort(Response::HTTP_BAD_GATEWAY, 'Terjadi kesalahan saat menghubungkan ke Gemini.');
-        }
-
-        return $response->json() ?? [];
     }
 
     protected function buildGeminiPayload(array $messages): array
