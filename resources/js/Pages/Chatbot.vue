@@ -95,78 +95,7 @@
                 ></i>
               </div>
               <div class="chat-message__bubble">
-                <p class="chat-message__text">
-                  {{ message.content }}
-                </p>
-
-                <div
-                  v-if="
-                    message.metadata &&
-                    message.metadata.intent === 'medication-recommendation' &&
-                    message.metadata.medication
-                  "
-                  class="chat-message__medication-card"
-                >
-                  <div
-                    v-if="message.metadata.medication.image_url"
-                    class="chat-message__medication-image"
-                  >
-                    <img
-                      :src="message.metadata.medication.image_url"
-                      :alt="`Foto ${message.metadata.medication.name}`"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div class="chat-message__medication-body">
-                    <p class="chat-message__medication-name">
-                      {{ message.metadata.medication.name }}
-                    </p>
-                    <p class="chat-message__medication-form">
-                      {{ message.metadata.medication.category }} •
-                      {{ message.metadata.medication.form }}
-                    </p>
-                    <p v-if="message.metadata.medication.stock_status" class="chat-message__medication-stock">
-                      {{ message.metadata.medication.stock_status }}
-                    </p>
-
-                    <p v-if="message.metadata.medication.how_it_works" class="chat-message__medication-desc">
-                      {{ message.metadata.medication.how_it_works }}
-                    </p>
-
-                    <div
-                      v-if="message.metadata.medication.dosage && Object.keys(message.metadata.medication.dosage).length"
-                      class="chat-message__medication-section"
-                    >
-                      <p class="chat-message__medication-section-title">Aturan Pakai</p>
-                      <ul class="chat-message__medication-list">
-                        <li v-for="(value, label) in message.metadata.medication.dosage" :key="label">
-                          <strong>{{ label }}:</strong> {{ value }}
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div
-                      v-if="message.metadata.medication.warnings && message.metadata.medication.warnings.length"
-                      class="chat-message__medication-section"
-                    >
-                      <p class="chat-message__medication-section-title">Perhatian</p>
-                      <ul class="chat-message__medication-list chat-message__medication-list--warning">
-                        <li v-for="(warning, index) in message.metadata.medication.warnings" :key="index">
-                          {{ warning }}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  v-if="message.metadata && message.metadata.cta && message.metadata.cta.url"
-                  class="chat-message__cta"
-                >
-                  <Button :href="message.metadata.cta.url" size="sm">
-                    {{ message.metadata.cta.label || 'Hubungi Apoteker' }}
-                  </Button>
-                </div>
+                <p>{{ message.content }}</p>
               </div>
             </div>
 
@@ -239,7 +168,6 @@ const welcomeMessage = {
   role: 'assistant',
   content:
     'Halo, saya asisten virtual Tiarana Pharmacy. Ceritakan gejala atau pertanyaan seputar kesehatan, obat, dan gaya hidup. Untuk kondisi darurat, segera hubungi tenaga medis.',
-  metadata: {},
 }
 
 const messages = ref([welcomeMessage])
@@ -416,7 +344,6 @@ const loadConversation = async (id) => {
         id: `conversation-${id}-${message.id}`,
         role: message.role === 'model' ? 'assistant' : message.role,
         content: message.content,
-        metadata: message.metadata ?? {},
         created_at: message.created_at,
       }))
     }
@@ -454,7 +381,6 @@ const sendMessage = async () => {
     role: 'user',
     content: trimmedMessage,
     created_at: new Date().toISOString(),
-    metadata: {},
   }
 
   messages.value = [...messages.value, userMessage]
@@ -475,9 +401,7 @@ const sendMessage = async () => {
       conversation_id: conversationId.value,
     })
 
-    const assistantPayload = data?.data?.message ?? null
-    const reply = assistantPayload?.content ?? data?.data?.reply
-    const metadata = assistantPayload?.metadata ?? {}
+    const reply = data?.data?.reply
 
     if (reply) {
       const assistantMessage = {
@@ -485,7 +409,6 @@ const sendMessage = async () => {
         role: 'assistant',
         content: reply,
         created_at: new Date().toISOString(),
-        metadata,
       }
 
       messages.value = [...messages.value, assistantMessage]
@@ -518,7 +441,6 @@ const sendMessage = async () => {
         content: 'Maaf, terjadi kesalahan saat menghubungi asisten. Coba kirim ulang pertanyaan Anda.',
         created_at: new Date().toISOString(),
         isError: true,
-        metadata: {},
       },
     ]
   } finally {
