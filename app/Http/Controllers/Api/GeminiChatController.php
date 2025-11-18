@@ -108,7 +108,7 @@ class GeminiChatController extends Controller
             ]);
         }
 
-        $ruleBasedResponse = $this->handleMedicationIntent($latestUserMessage);
+        $ruleBasedResponse = $this->handleMedicationIntent($conversation, $latestUserMessage);
 
         if ($ruleBasedResponse) {
             $payload = $this->persistAndTransformResponse(
@@ -165,29 +165,112 @@ class GeminiChatController extends Controller
         ]);
     }
 
-    protected function handleMedicationIntent(?array $latestUserMessage): ?array
+    protected function handleMedicationIntent(ChatConversation $conversation, ?array $latestUserMessage): ?array
     {
         if (! $latestUserMessage) {
             return null;
         }
 
-        $medication = $this->medicationCatalog->matchByQuery($latestUserMessage['content'] ?? '');
+        $content = trim($latestUserMessage['content'] ?? '');
+
+        if ($content === '') {
+            return null;
+        }
+
+        $state = $this->extractConversationState($conversation);
+
+        if (($state['pending'] ?? null) !== null) {
+            return $this->handlePendingState($state, $content);
+        }
+
+        $analysis = $this->analyzeMedicationQuery($content);
+
+        if ($analysis['needs_age']) {
+            $newState = [
+                'pending' => 'age',
+                'topic' => 'demam',
+                'base_query' => $content,
+            ];
+
+            return $this->respondWithClarification(
+                'Untuk demam usia berapa? Sebutkan usia pasien (contoh: 1 tahun, 5 tahun, 25 tahun).',
+                [],
+                $newState
+            );
+        }
+
+        if ($analysis['needs_symptom']) {
+            $newState = [
+                'pending' => 'symptom',
+                'topic' => 'batuk',
+                'base_query' => $content,
+            ];
+
+            return $this->respondWithClarification(
+                'Batuknya kering atau berdahak? Sebutkan jenis batuknya.',
+                ['batuk kering', 'batuk berdahak'],
+                $newState
+            );
+        }
+
+        if ($analysis['needs_form']) {
+            $forms = $this->medicationCatalog->availableForms($analysis['symptom']);
+
+            if (count($forms) <= 1) {
+                $analysis['form'] = $forms[0] ?? null;
+            } else {
+                $newState = [
+                    'pending' => 'form',
+                    'topic' => $analysis['symptom'],
+                    'symptom' => $analysis['symptom'],
+                    'base_query' => $content,
+                    'forms' => $forms,
+                ];
+
+                return $this->respondWithClarification(
+                    'Ingin bentuk obat apa? (sirup atau tablet)',
+                    $forms,
+                    $newState
+                );
+            }
+        }
+
+        $filters = array_filter([
+            'symptom' => $analysis['symptom'] ?? null,
+            'form' => $analysis['form'] ?? null,
+            'age_group' => $analysis['age_group'] ?? null,
+            'product' => $analysis['product'] ?? null,
+        ]);
+
+        $candidates = $this->medicationCatalog->matchCandidates($content, $filters, 4);
+
+        if ($candidates->count() > 1 && empty($analysis['symptom']) && empty($filters['form'])) {
+            $newState = [
+                'pending' => 'variant',
+                'base_query' => $content,
+                'options' => $candidates->all(),
+            ];
+
+            $optionsText = $candidates
+                ->map(fn (array $item) => trim(sprintf('%s - %s (%s)', $item['name'] ?? 'Produk', $item['category'] ?? '', $item['form'] ?? '')))
+                ->implode("\n- ");
+
+            return [
+                'content' => "Ada beberapa pilihan yang sesuai:\n- {$optionsText}\nSebutkan nama atau bentuk yang Anda maksud.",
+                'metadata' => [
+                    'intent' => 'clarification',
+                    'state' => $newState,
+                ],
+            ];
+        }
+
+        $medication = $candidates->first();
 
         if (! $medication) {
             return null;
         }
 
-        $details = $this->medicationCatalog->formatDetails($medication);
-
-        return [
-            'content' => $this->buildMedicationReplyText($details),
-            'metadata' => [
-                'intent' => 'medication-recommendation',
-                'medication' => $details,
-                'cta' => $this->buildContactCta(),
-                'source' => 'catalog',
-            ],
-        ];
+        return $this->buildMedicationResponsePayload($medication);
     }
 
     protected function buildMedicationReplyText(array $details): string
@@ -381,5 +464,289 @@ class GeminiChatController extends Controller
         $cleaned = preg_replace($patterns, '$1', $text) ?? $text;
 
         return str_replace(['**', '__'], '', $cleaned);
+    }
+    protected function handlePendingState(array $state, string $content): ?array
+    {
+        $pending = $state['pending'] ?? null;
+        $normalized = Str::lower($content);
+
+        if ($pending === 'age') {
+            $ageGroup = $this->detectAgeGroup($normalized);
+
+            if (! $ageGroup) {
+                return $this->respondWithClarification(
+                    'Saya belum menangkap usianya. Sebutkan usia pasien, misalnya "1 tahun", "5 tahun", atau "20 tahun".',
+                    [],
+                    $state
+                );
+            }
+
+            $state['age_group'] = $ageGroup;
+            $state['pending'] = null;
+
+            return $this->buildMedicationResponseFromState($state);
+        }
+
+        if ($pending === 'symptom') {
+            $symptom = $this->detectSymptom($normalized);
+
+            if (! $symptom || $symptom === 'batuk') {
+                return $this->respondWithClarification(
+                    'Saya belum menangkap jenis batuknya. Batuk kering atau berdahak?',
+                    ['batuk kering', 'batuk berdahak'],
+                    $state
+                );
+            }
+
+            $state['symptom'] = $symptom;
+            $state['pending'] = 'form';
+
+            $forms = $state['forms'] ?? $this->medicationCatalog->availableForms($symptom);
+
+            if (count($forms) <= 1) {
+                $state['pending'] = null;
+                $state['form'] = $forms[0] ?? null;
+
+                return $this->buildMedicationResponseFromState($state);
+            }
+
+            $state['forms'] = $forms;
+
+            return $this->respondWithClarification(
+                'Ingin bentuk sirup atau tablet?',
+                $forms,
+                $state
+            );
+        }
+
+        if ($pending === 'form') {
+            $form = $this->detectForm($normalized);
+
+            if (! $form) {
+                $options = $state['forms'] ?? ['sirup', 'tablet'];
+
+                return $this->respondWithClarification(
+                    'Silakan pilih bentuk obatnya (contoh: sirup atau tablet).',
+                    $options,
+                    $state
+                );
+            }
+
+            $state['form'] = $form;
+            $state['pending'] = null;
+
+            return $this->buildMedicationResponseFromState($state);
+        }
+
+        if ($pending === 'variant') {
+            return $this->handleVariantSelection($state, $normalized);
+        }
+
+        return null;
+    }
+
+    protected function buildMedicationResponseFromState(array $state): ?array
+    {
+        $filters = array_filter([
+            'symptom' => $state['symptom'] ?? null,
+            'form' => $state['form'] ?? null,
+            'age_group' => $state['age_group'] ?? null,
+        ]);
+
+        $medication = $this->medicationCatalog->matchByQuery($state['base_query'] ?? null, $filters);
+
+        if (! $medication) {
+            return [
+                'content' => 'Maaf, kombinasi tersebut belum tersedia di dataset kami. Saya tetap bisa memberikan saran umum atau Anda dapat menghubungi apoteker melalui halaman Kontak.',
+                'metadata' => [
+                    'intent' => 'medication-recommendation',
+                    'cta' => $this->buildContactCta(),
+                    'state' => ['pending' => null],
+                ],
+            ];
+        }
+
+        return $this->buildMedicationResponsePayload($medication, ['pending' => null]);
+    }
+
+    protected function buildMedicationResponsePayload(array $medication, array $state = []): array
+    {
+        $details = $this->medicationCatalog->formatDetails($medication);
+
+        return [
+            'content' => $this->buildMedicationReplyText($details),
+            'metadata' => [
+                'intent' => 'medication-recommendation',
+                'medication' => $details,
+                'cta' => $this->buildContactCta(),
+                'source' => 'catalog',
+                'state' => $state ?: ['pending' => null],
+            ],
+        ];
+    }
+
+    protected function respondWithClarification(string $message, array $options, array $state): array
+    {
+        $optionsText = implode(', ', array_unique(array_filter($options)));
+
+        return [
+            'content' => $optionsText ? "{$message}\nPilihan: {$optionsText}" : $message,
+            'metadata' => [
+                'intent' => 'clarification',
+                'state' => $state,
+            ],
+        ];
+    }
+
+    protected function analyzeMedicationQuery(string $content): array
+    {
+        $symptom = $this->detectSymptom($content);
+        $form = $this->detectForm($content);
+        $ageGroup = $this->detectAgeGroup($content);
+
+        $needsSymptom = false;
+        $needsForm = false;
+
+        if (! $symptom && Str::contains(Str::lower($content), 'batuk')) {
+            $needsSymptom = true;
+        }
+
+        if ($symptom && Str::contains($symptom, 'batuk') && ! $form) {
+            $needsForm = true;
+        }
+
+        return [
+            'symptom' => $symptom,
+            'form' => $form,
+            'needs_symptom' => $needsSymptom,
+            'needs_form' => $needsForm,
+            'needs_age' => ($symptom === 'demam' && ! $ageGroup && Str::contains(Str::lower($content), 'demam')),
+            'age_group' => $ageGroup,
+        ];
+    }
+
+    protected function detectSymptom(string $content): ?string
+    {
+        $text = Str::lower($content);
+        $map = [
+            'batuk berdahak' => ['batuk berdahak', 'berdahak', 'dahak'],
+            'batuk kering' => ['batuk kering', 'kering', 'keringnya'],
+            'demam' => ['demam', 'panas', 'suhu tinggi'],
+            'flu' => ['flu', 'pilek'],
+        ];
+
+        foreach ($map as $symptom => $keywords) {
+            foreach ($keywords as $keyword) {
+                if ($keyword !== '' && Str::contains($text, $keyword)) {
+                    return $symptom;
+                }
+            }
+        }
+
+        return Str::contains($text, 'batuk') ? 'batuk' : null;
+    }
+
+    protected function detectAgeGroup(string $content): ?string
+    {
+        $text = Str::lower($content);
+        $ageMatches = [];
+
+        if (preg_match('/(\d{1,3})\s*tahun/', $text, $ageMatches)) {
+            $age = (int) $ageMatches[1];
+        } elseif (preg_match('/(\d{1,3})\s*th/', $text, $ageMatches)) {
+            $age = (int) $ageMatches[1];
+        } else {
+            $digits = (int) filter_var($text, FILTER_SANITIZE_NUMBER_INT);
+            $age = $digits > 0 ? $digits : null;
+        }
+
+        if ($age === null) {
+            return null;
+        }
+
+        if ($age < 2) {
+            return 'bayi';
+        }
+
+        if ($age >= 2 && $age <= 11) {
+            return 'anak';
+        }
+
+        return 'dewasa';
+    }
+
+    protected function detectForm(string $content): ?string
+    {
+        $text = Str::lower($content);
+        $map = [
+            'sirup' => ['sirup', 'syrup'],
+            'tablet' => ['tablet', 'tab', 'pil', 'caplet'],
+            'kapsul' => ['kapsul', 'capsul', 'capsule'],
+        ];
+
+        foreach ($map as $form => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (Str::contains($text, $keyword)) {
+                    return $form;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function handleVariantSelection(array $state, string $answer): ?array
+    {
+        $options = $state['options'] ?? [];
+
+        foreach ($options as $option) {
+            $name = Str::lower($option['name'] ?? '');
+            $category = Str::lower($option['category'] ?? '');
+            $form = Str::lower($option['form'] ?? '');
+
+            if (
+                ($name && Str::contains($answer, $name)) ||
+                ($category && Str::contains($answer, $category)) ||
+                ($form && Str::contains($answer, $form))
+            ) {
+                return $this->buildMedicationResponsePayload($option, ['pending' => null]);
+            }
+        }
+
+        $choices = collect($options)
+            ->map(fn (array $item) => trim(sprintf('%s (%s)', $item['name'] ?? 'Produk', $item['category'] ?? '')))
+            ->implode(', ');
+
+        return [
+            'content' => "Saya belum yakin varian mana yang dimaksud. Sebutkan salah satu dari: {$choices}.",
+            'metadata' => [
+                'intent' => 'clarification',
+                'state' => $state,
+            ],
+        ];
+    }
+
+    protected function extractConversationState(ChatConversation $conversation): array
+    {
+        if (! $conversation->exists) {
+            return [];
+        }
+
+        $lastAssistant = $conversation->messages()
+            ->where('role', 'assistant')
+            ->latest()
+            ->first();
+
+        if (! $lastAssistant) {
+            return [];
+        }
+
+        $metadata = $lastAssistant->metadata;
+
+        if (! is_array($metadata)) {
+            return [];
+        }
+
+        return $metadata['state'] ?? [];
     }
 }
