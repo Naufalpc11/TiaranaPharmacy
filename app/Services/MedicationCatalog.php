@@ -6,8 +6,6 @@ use App\Models\MedicationAsset;
 use App\Support\AgeRange;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -63,14 +61,14 @@ class MedicationCatalog
                 $item['source'] = 'config';
 
                 return $item;
-            });
+            })
+            ->values()
+            ->toBase();
     }
 
     protected function buildDatasetCatalog(): Collection
     {
-        return $this->buildDatabaseDatasetCatalog()
-            ->merge($this->buildFilesystemDatasetCatalog())
-            ->values();
+        return $this->buildDatabaseDatasetCatalog();
     }
 
     protected function buildDatabaseDatasetCatalog(): Collection
@@ -115,44 +113,9 @@ class MedicationCatalog
                     'source' => 'dataset-db',
                 ];
             })
-            ->filter(fn (array $item) => $item['dataset_image'] ?? false);
-    }
-
-    protected function buildFilesystemDatasetCatalog(): Collection
-    {
-        $datasetPath = resource_path('images/dataset');
-
-        if (! File::isDirectory($datasetPath)) {
-            return collect();
-        }
-
-        return collect(File::files($datasetPath))
-            ->map(function (\SplFileInfo $file) {
-                $extension = $file->getExtension();
-                $baseName = $file->getBasename($extension ? '.'.$extension : '');
-                $parts = preg_split('/_+/', $baseName, 3);
-
-                $category = trim($parts[0] ?? '');
-                $product = trim($parts[1] ?? $category);
-                $form = trim($parts[2] ?? '');
-
-                $keywords = $this->buildKeywordSet([$category, $product, $form]);
-                $slug = Str::slug($baseName);
-
-                return [
-                    'slug' => $slug ?: Str::slug($product.$file->getFilename()),
-                    'name' => $product ?: $category,
-                    'category' => $category,
-                    'form' => $form,
-                    'dataset_image' => $file->getFilename(),
-                    'keywords' => $keywords,
-                    'symptoms' => array_filter([$category]),
-                    'age_group' => $this->inferAgeGroupFromLabels([$category, $product, $form]),
-                    'match_threshold' => 2,
-                    'source' => 'dataset',
-                ];
-            })
-            ->filter(fn (array $item) => $item['dataset_image'] ?? false);
+            ->filter(fn (array $item) => $item['dataset_image'] ?? false)
+            ->values()
+            ->toBase();
     }
 
     protected function buildKeywordSet(array $parts): array
@@ -334,19 +297,11 @@ class MedicationCatalog
 
     protected function buildDatasetImageUrl(array $medication): ?string
     {
-        if (! empty($medication['dataset_image_url'])) {
-            return $medication['dataset_image_url'];
-        }
-
-        if (empty($medication['slug']) || empty($medication['dataset_image'])) {
+        if (($medication['source'] ?? null) !== 'dataset-db') {
             return null;
         }
 
-        if (! Route::has('medications.dataset.show')) {
-            return null;
-        }
-
-        return route('medications.dataset.show', ['slug' => $medication['slug']], false);
+        return $medication['dataset_image_url'] ?? null;
     }
 
     public function findBySlug(string $slug): ?array
