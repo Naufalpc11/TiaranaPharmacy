@@ -226,6 +226,7 @@ const sendMessage = async () => {
       .map((message) => ({
         role: message.role,
         content: message.content,
+        metadata: message.metadata ?? null,
       }))
 
     const { data } = await axios.post('/api/chatbot/message', {

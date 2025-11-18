@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\MedicationAsset;
+use App\Support\AgeRange;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class MedicationCatalog
@@ -64,6 +67,58 @@ class MedicationCatalog
     }
 
     protected function buildDatasetCatalog(): Collection
+    {
+        return $this->buildDatabaseDatasetCatalog()
+            ->merge($this->buildFilesystemDatasetCatalog())
+            ->values();
+    }
+
+    protected function buildDatabaseDatasetCatalog(): Collection
+    {
+        if (! class_exists(MedicationAsset::class)) {
+            return collect();
+        }
+
+        try {
+            if (! Schema::hasTable('medication_assets')) {
+                return collect();
+            }
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return collect();
+        }
+
+        return MedicationAsset::query()
+            ->latest('updated_at')
+            ->get()
+            ->map(function (MedicationAsset $asset) {
+                $keywords = $this->buildKeywordSet([
+                    $asset->name,
+                    $asset->function_label,
+                    $asset->form,
+                    AgeRange::label($asset->age_label),
+                ]);
+
+                return [
+                    'slug' => $asset->slug,
+                    'name' => $asset->name,
+                    'category' => $asset->function_label,
+                    'form' => $asset->form,
+                    'dataset_image' => $asset->image_path,
+                    'dataset_image_url' => $asset->image_url,
+                    'keywords' => $keywords,
+                    'symptoms' => array_filter([$asset->function_label]),
+                    'age_group' => $asset->age_label ?? null,
+                    'match_threshold' => 3,
+                    'notes' => $asset->notes,
+                    'source' => 'dataset-db',
+                ];
+            })
+            ->filter(fn (array $item) => $item['dataset_image'] ?? false);
+    }
+
+    protected function buildFilesystemDatasetCatalog(): Collection
     {
         $datasetPath = resource_path('images/dataset');
 
@@ -246,6 +301,8 @@ class MedicationCatalog
             'dataset_image_url' => $this->buildDatasetImageUrl($medication),
             'symptoms' => $medication['symptoms'] ?? [],
             'age_group' => $medication['age_group'] ?? null,
+            'age_range_label' => AgeRange::label($medication['age_group'] ?? null),
+            'notes' => $medication['notes'] ?? null,
             'source' => $medication['source'] ?? 'config',
         ];
     }
@@ -277,6 +334,10 @@ class MedicationCatalog
 
     protected function buildDatasetImageUrl(array $medication): ?string
     {
+        if (! empty($medication['dataset_image_url'])) {
+            return $medication['dataset_image_url'];
+        }
+
         if (empty($medication['slug']) || empty($medication['dataset_image'])) {
             return null;
         }

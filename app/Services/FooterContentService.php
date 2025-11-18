@@ -27,23 +27,33 @@ class FooterContentService
 
     public function get(): array
     {
-        /** @var FooterSetting|null $setting */
-        $setting = FooterSetting::query()->first();
+        try {
+            /** @var FooterSetting|null $setting */
+            $setting = FooterSetting::query()->first();
 
-        if (! $setting) {
-            $setting = FooterSetting::query()->create([
-                'tagline' => self::DEFAULT_TAGLINE,
-                'contact_phone' => self::DEFAULT_CONTACT['phone'],
-                'contact_email' => self::DEFAULT_CONTACT['email'],
-                'contact_address' => self::DEFAULT_CONTACT['address'],
-                'operational_hours_primary' => self::DEFAULT_HOURS['weekday'],
-                'operational_hours_secondary' => self::DEFAULT_HOURS['weekend'],
-                'facebook_url' => self::DEFAULT_SOCIAL_LINKS['facebook'],
-                'instagram_url' => self::DEFAULT_SOCIAL_LINKS['instagram'],
-                'whatsapp_url' => self::DEFAULT_SOCIAL_LINKS['whatsapp'],
-            ]);
+            if (! $setting) {
+                $setting = FooterSetting::query()->create([
+                    'tagline' => self::DEFAULT_TAGLINE,
+                    'contact_phone' => self::DEFAULT_CONTACT['phone'],
+                    'contact_email' => self::DEFAULT_CONTACT['email'],
+                    'contact_address' => self::DEFAULT_CONTACT['address'],
+                    'operational_hours_primary' => self::DEFAULT_HOURS['weekday'],
+                    'operational_hours_secondary' => self::DEFAULT_HOURS['weekend'],
+                    'facebook_url' => self::DEFAULT_SOCIAL_LINKS['facebook'],
+                    'instagram_url' => self::DEFAULT_SOCIAL_LINKS['instagram'],
+                    'whatsapp_url' => self::DEFAULT_SOCIAL_LINKS['whatsapp'],
+                ]);
+            }
+        } catch (\Throwable $exception) {
+            report($exception);
+            $setting = null;
         }
 
+        return $this->buildResponse($setting);
+    }
+
+    protected function buildResponse(?FooterSetting $setting): array
+    {
         return [
             'tagline' => $setting?->tagline ?? self::DEFAULT_TAGLINE,
             'contact' => [
