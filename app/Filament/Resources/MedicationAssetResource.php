@@ -69,6 +69,7 @@ class MedicationAssetResource extends Resource
                             ->directory('dataset/medications')
                             ->visibility('public')
                             ->image()
+                            ->helperText('Gunakan foto tajam minimal 800x600 px, rasio landscape, maksimal 5 MB.')
                             ->maxSize(5120)
                             ->required()
                             ->downloadable()
