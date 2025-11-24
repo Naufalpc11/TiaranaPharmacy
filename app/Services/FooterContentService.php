@@ -20,9 +20,9 @@ class FooterContentService
     ];
 
     private const DEFAULT_SOCIAL_LINKS = [
-        'facebook' => '#',
-        'instagram' => '#',
-        'whatsapp' => '#',
+        'facebook' => '/not-found',
+        'instagram' => '/not-found',
+        'whatsapp' => '/not-found',
     ];
 
     public function get(): array

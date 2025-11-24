@@ -91,6 +91,13 @@ Route::prefix('api')->group(function () {
     });
 });
 
+// Route khusus untuk menampilkan halaman 404 (dapat di-link langsung)
+Route::get('/not-found', function () {
+    return Inertia::render('NotFound')
+        ->toResponse(request())
+        ->setStatusCode(404);
+})->name('not-found');
+
 Route::fallback(function () {
     return Inertia::render('NotFound')
         ->toResponse(request())

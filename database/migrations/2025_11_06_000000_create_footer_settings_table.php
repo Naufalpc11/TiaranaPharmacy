@@ -33,9 +33,9 @@ return new class extends Migration
             'contact_address' => 'Jl. Sepinggan Baru',
             'operational_hours_primary' => 'Senin - Sabtu: 08:00 - 22:00',
             'operational_hours_secondary' => 'Minggu: 09:00 - 22:00',
-            'facebook_url' => '#',
-            'instagram_url' => '#',
-            'whatsapp_url' => '#',
+            'facebook_url' => '/not-found',
+            'instagram_url' => '/not-found',
+            'whatsapp_url' => '/not-found',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

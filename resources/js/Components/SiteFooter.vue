@@ -28,7 +28,7 @@
                 <h3>Ikuti Kami</h3>
                 <div class="social-links">
                     <a
-                        :href="socialLinks.facebook || '#'"
+                        :href="socialLinksNormalized.facebook"
                         class="social-link"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -37,7 +37,7 @@
                         <i class="fab fa-facebook"></i>
                     </a>
                     <a
-                        :href="socialLinks.instagram || '#'"
+                        :href="socialLinksNormalized.instagram"
                         class="social-link"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -46,7 +46,7 @@
                         <i class="fab fa-instagram"></i>
                     </a>
                     <a
-                        :href="socialLinks.whatsapp || '#'"
+                        :href="socialLinksNormalized.whatsapp"
                         class="social-link"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -64,8 +64,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const currentYear = new Date().getFullYear();
 const page = usePage();
@@ -75,6 +75,22 @@ const tagline = computed(() => footer.value.tagline ?? '');
 const contact = computed(() => footer.value.contact ?? {});
 const hours = computed(() => footer.value.hours ?? {});
 const socialLinks = computed(() => footer.value.social_links ?? {});
+
+const socialLinksNormalized = computed(() => {
+    const s = socialLinks.value || {};
+    const normalize = (val) => (val && val !== '#' ? val : '/not-found');
+
+    return {
+        facebook: normalize(s.facebook),
+        instagram: normalize(s.instagram),
+        whatsapp: normalize(s.whatsapp),
+    };
+});
+
+const isExternal = (url) => {
+    if (!url) return false;
+    return /^https?:\/\//i.test(url) || /^\/\//.test(url);
+};
 </script>
 
 <style lang="scss" scoped>
