@@ -32,6 +32,9 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('Tiarana Pharmacy')
+            ->brandLogo(asset('images/Logo/Logo_Fix.png'))
+            ->brandLogoHeight('1.75rem')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
