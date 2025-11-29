@@ -17,7 +17,7 @@ function resolvePageComponent(name, pages) {
 
 createInertiaApp({
     // Nama aplikasi Anda (opsional)
-    title: (title) => (title ? `${title} - Tiaranapharmacy` : 'Tiaranapharmacy'),
+    title: (title) => (title ? `${title} - Tiarana Pharmacy` : 'Tiarana Pharmacy'),
 
     // Fungsi ini mencari komponen Vue di direktori Resources/js/Pages/
     resolve: (name) => resolvePageComponent(name, import.meta.glob('./Pages/**/*.vue')),

@@ -22,6 +22,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -33,8 +34,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Tiarana Pharmacy')
-            ->brandLogo(asset('images/Logo/Logo_Fix.png'))
-            ->brandLogoHeight('1.75rem')
+            ->brandLogo(Vite::asset('resources/images/Logo/Logo_Texed.png'))
+            ->brandLogoHeight('3.75rem')
+                ->favicon(asset('images/favicon.ico'))
             ->login()
             ->colors([
                 'primary' => Color::Amber,
