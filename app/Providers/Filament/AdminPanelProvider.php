@@ -51,6 +51,12 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
+            ->userMenuItems([
+                'password' => \Filament\Navigation\MenuItem::make()
+                    ->label('Ubah Password')
+                    ->url(fn () => \App\Filament\Pages\ChangePassword::getUrl())
+                    ->icon('heroicon-o-key'),
+            ])
             ->bootUsing(function (Panel $panel) {
                 Filament::serving(function () {
                     if (app()->runningInConsole()) {
