@@ -40,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
                     : rescue(fn () => Vite::asset('resources/images/Logo/Logo_Texed.png'), null, report: false)
             )
             ->brandLogoHeight('3.75rem')
-                ->favicon(asset('images/favicon.ico'))
+            ->favicon(asset('images/Logo/Logo_Fix.png'))
             ->login()
             ->passwordReset(
                 \App\Filament\Pages\Auth\PasswordResetRequest::class,
