@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Api\GeminiChatController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\MedicationImageController;
 use App\Models\Article;
 use App\Services\AboutPageContentService;
 use App\Services\HomePageContentService;
+use App\Services\SupabaseService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -97,6 +99,32 @@ Route::get('/not-found', function () {
         ->toResponse(request())
         ->setStatusCode(404);
 })->name('not-found');
+
+// Test Supabase
+Route::get('/test-supabase', function(SupabaseService $supabase) {
+    $result = $supabase->sendPasswordResetEmail('tiaranafarma@gmail.com');
+    return response()->json($result);
+})->name('test.supabase');
+
+Route::get('/test-signup', function(SupabaseService $supabase) {
+    $result = $supabase->signUp('testuser@example.com', 'Password123!');
+    return response()->json($result);
+})->name('test.signup');
+
+Route::get('/test-signin', function(SupabaseService $supabase) {
+    $result = $supabase->signIn('tiaranafarma@gmail.com', 'TiaranaFarma1774');
+    return response()->json($result);
+})->name('test.signin');
+
+// Routes untuk forgot password & reset password
+Route::view('/auth/forgot-password', 'filament.admin.forgot-password')
+    ->name('password.forgot.form');
+Route::view('/auth/reset-password', 'filament.admin.reset-password')
+    ->name('password.reset.form');
+Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot'])
+    ->name('password.forgot');
+Route::post('/auth/reset-password', [PasswordResetController::class, 'reset'])
+    ->name('password.reset');
 
 Route::fallback(function () {
     return Inertia::render('NotFound')

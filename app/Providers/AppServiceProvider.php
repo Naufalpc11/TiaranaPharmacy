@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\FooterContentService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
 use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(FooterContentService $footerContentService): void
     {
+        // Register mail views
+        View::addNamespace('mail', resource_path('views/mail'));
+
         Inertia::share([
             'auth' => fn () => [
                 'user' => optional(Auth::user(), fn ($user) => [

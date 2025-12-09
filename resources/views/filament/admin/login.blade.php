@@ -142,6 +142,9 @@
     @if ($errors->any())
         <div class="errors">
             {{ __('Email atau kata sandi tidak cocok.') }}
+            <div style="margin-top:10px;">
+                <a href="{{ route('password.forgot.form') }}" style="color:#f97316;font-weight:600;text-decoration:none;">Reset password via email</a>
+            </div>
         </div>
     @endif
 
@@ -178,6 +181,26 @@
 
         <button type="submit">Masuk</button>
     </form>
+
+    <div id="forgot-password-link" style="margin-top:20px; padding-top:20px; border-top:1px solid #e5e7eb; text-align:center;">
+        <a href="/auth/forgot-password" style="display:inline-block; color:#f97316; background:#fff7ed; padding:8px 16px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.9rem; border:1px solid #fed7aa;">
+            🔑 Lupa password?
+        </a>
+    </div>
 </main>
+
+<script>
+    // Ensure link is visible
+    document.addEventListener('DOMContentLoaded', function() {
+        const link = document.getElementById('forgot-password-link');
+        if (link) {
+            link.style.display = 'block';
+            link.style.visibility = 'visible';
+            link.style.opacity = '1';
+            console.log('Forgot password link loaded');
+        }
+    });
+</script>
+
 </body>
 </html>

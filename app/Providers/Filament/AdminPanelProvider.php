@@ -34,7 +34,11 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Tiarana Pharmacy')
-            ->brandLogo(Vite::asset('resources/images/Logo/Logo_Texed.png'))
+            ->brandLogo(
+                app()->runningInConsole()
+                    ? null
+                    : rescue(fn () => Vite::asset('resources/images/Logo/Logo_Texed.png'), null, report: false)
+            )
             ->brandLogoHeight('3.75rem')
                 ->favicon(asset('images/favicon.ico'))
             ->login()
