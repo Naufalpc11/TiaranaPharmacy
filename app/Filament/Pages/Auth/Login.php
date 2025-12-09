@@ -6,5 +6,11 @@ use Filament\Pages\Auth\Login as BaseLogin;
 
 class Login extends BaseLogin
 {
-    // Gunakan default Filament login tapi tambah link "Lupa password?" via view override
+    /**
+     * Arahkan tombol "Forgot password?" ke halaman kustom tanpa input email.
+     */
+    public function getPasswordResetUrl(): ?string
+    {
+        return route('password.forgot.form');
+    }
 }

@@ -37,7 +37,7 @@ class PasswordResetController extends Controller
 
         if (!$result['success']) {
             \Log::error('Supabase reset password error: ' . $result['message']);
-            return back()->withErrors(['email' => 'Gagal mengirim email. Hubungi administrator.']);
+            return back()->withErrors(['email' => $result['message'] ?: 'Gagal mengirim email. Hubungi administrator.']);
         }
 
         return back()->with('status', 'Link reset password telah dikirim ke email Anda. Cek inbox atau folder spam.');
@@ -73,13 +73,5 @@ class PasswordResetController extends Controller
         }
 
         return redirect('/admin/login')->with('status', 'Password berhasil direset. Silakan login dengan password baru.');
-    }
-}
-
-        // Delete token
-        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
-
-        return redirect()->route('filament.admin.auth.login')
-            ->with('status', 'Password berhasil direset. Silakan login dengan password baru.');
     }
 }

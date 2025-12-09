@@ -42,6 +42,10 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('3.75rem')
                 ->favicon(asset('images/favicon.ico'))
             ->login()
+            ->passwordReset(
+                \App\Filament\Pages\Auth\PasswordResetRequest::class,
+                \Filament\Pages\Auth\PasswordReset\ResetPassword::class
+            )
             ->colors([
                 'primary' => Color::Amber,
             ])

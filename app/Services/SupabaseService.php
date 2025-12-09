@@ -24,28 +24,53 @@ class SupabaseService
     public function sendPasswordResetEmail(string $email): array
     {
         try {
+            $apiKey = $this->serviceKey ?: $this->anonKey;
+            $redirectUrl = rtrim(config('app.url'), '/') . '/auth/reset-password';
+
             $response = Http::withHeaders([
-                'apikey' => $this->anonKey,
-                'Authorization' => "Bearer {$this->anonKey}",
+                'apikey' => $apiKey,
+                'Authorization' => "Bearer {$apiKey}",
                 'Content-Type' => 'application/json',
             ])
             ->post("{$this->url}/auth/v1/recover", [
                 'email' => $email,
+                'redirect_to' => $redirectUrl,
                 'gotrue_meta_security' => [],
             ]);
 
             if ($response->failed()) {
+                $message = $response->json('msg')
+                    ?? $response->json('error_description')
+                    ?? $response->json('message')
+                    ?? 'Failed to send reset email';
+
+                \Log::error('Supabase reset email failed', [
+                    'email' => $email,
+                    'status' => $response->status(),
+                    'body' => $response->json(),
+                    'text' => $response->body(),
+                ]);
+
                 return [
                     'success' => false,
-                    'message' => $response->json('error_description') ?? 'Failed to send reset email',
+                    'message' => $message,
                 ];
             }
+
+            \Log::info('Supabase reset email success', [
+                'email' => $email,
+                'status' => $response->status(),
+            ]);
 
             return [
                 'success' => true,
                 'message' => 'Password reset email sent successfully',
             ];
         } catch (Exception $e) {
+            \Log::error('Supabase reset email exception', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
             return [
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),
@@ -72,7 +97,8 @@ class SupabaseService
             $exp = $payload['exp'] ?? null;
             $iat = $payload['iat'] ?? null;
 
-            if (($exp && $now > $exp) || ($iat && ($now - $iat) > 3600)) {
+            // Batasi 30 menit (1800 detik)
+            if (($exp && $now > $exp) || ($iat && ($now - $iat) > 1800)) {
                 return [
                     'success' => false,
                     'message' => 'Link reset sudah kedaluwarsa, silakan minta ulang',
