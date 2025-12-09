@@ -84,7 +84,7 @@ class SupabaseService
     public function resetPassword(string $email, string $token, string $newPassword): array
     {
         try {
-            // Local expiry guard: 1 hour max age based on JWT exp/iat
+            // Local expiry guard: 30 minutes max age based on JWT exp/iat
             $payload = $this->decodeJwtPayload($token);
             if (! $payload) {
                 return [
@@ -105,44 +105,45 @@ class SupabaseService
                 ];
             }
 
-            $response = Http::withHeaders([
+            // Gunakan access_token langsung untuk update password user
+            $headers = [
                 'apikey' => $this->anonKey,
+                'Authorization' => "Bearer {$token}",
                 'Content-Type' => 'application/json',
-            ])
-            ->post("{$this->url}/auth/v1/verify", [
-                'type' => 'recovery',
-                'token' => $token,
-            ]);
+            ];
 
-            if ($response->failed()) {
+            // Opsional: verifikasi email cocok dengan access token
+            $userResponse = Http::withHeaders($headers)
+                ->get("{$this->url}/auth/v1/user");
+
+            if ($userResponse->failed()) {
                 return [
                     'success' => false,
                     'message' => 'Token reset tidak valid atau sudah kedaluwarsa',
                 ];
             }
 
-            $session = $response->json('session');
-            if (!$session || !isset($session['access_token'])) {
+            $userEmail = $userResponse->json('email') ?? null;
+            if ($userEmail && strcasecmp($userEmail, $email) !== 0) {
                 return [
                     'success' => false,
-                    'message' => 'Gagal memverifikasi token',
+                    'message' => 'Email pada token tidak cocok',
                 ];
             }
 
-            // Update password
-            $updateResponse = Http::withHeaders([
-                'apikey' => $this->anonKey,
-                'Authorization' => "Bearer {$session['access_token']}",
-                'Content-Type' => 'application/json',
-            ])
-            ->put("{$this->url}/auth/v1/user", [
-                'password' => $newPassword,
-            ]);
+            $updateResponse = Http::withHeaders($headers)
+                ->put("{$this->url}/auth/v1/user", [
+                    'password' => $newPassword,
+                ]);
 
             if ($updateResponse->failed()) {
+                $msg = $updateResponse->json('msg')
+                    ?? $updateResponse->json('message')
+                    ?? 'Gagal memperbarui password';
+
                 return [
                     'success' => false,
-                    'message' => 'Gagal memperbarui password',
+                    'message' => $msg,
                 ];
             }
 

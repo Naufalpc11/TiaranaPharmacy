@@ -80,7 +80,9 @@
 
             const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
             const queryParams = new URLSearchParams(window.location.search);
-            const accessToken = hashParams.get('access_token') || queryParams.get('token') || tokenInput.value;
+            const storedToken = sessionStorage.getItem('reset_access_token') || '';
+            const storedEmail = sessionStorage.getItem('reset_email') || '';
+            const accessToken = hashParams.get('access_token') || queryParams.get('token') || tokenInput.value || storedToken;
             const errorCode = hashParams.get('error') || queryParams.get('error');
             const errorDescription = hashParams.get('error_description') || queryParams.get('error_description');
 
@@ -100,6 +102,7 @@
 
             if (accessToken) {
                 tokenInput.value = accessToken;
+                sessionStorage.setItem('reset_access_token', accessToken);
 
                 // Ambil email dari Supabase berdasarkan token
                 if (supabaseUrl && supabaseAnonKey && emailInput && !emailInput.value) {
@@ -114,9 +117,12 @@
                             const data = await res.json();
                             if (data?.email) {
                                 emailInput.value = data.email;
+                                sessionStorage.setItem('reset_email', data.email);
                             }
                         })
                         .catch(() => {});
+                } else if (emailInput && !emailInput.value && storedEmail) {
+                    emailInput.value = storedEmail;
                 }
             } else {
                 const statusBox = document.createElement('div');
