@@ -3,6 +3,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const shouldSkipAnimations = () => {
+  if (typeof window === 'undefined') return false;
+  const prefersReduce =
+    typeof matchMedia !== 'undefined' &&
+    matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isCoarse =
+    (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches) ||
+    'ontouchstart' in window ||
+    (navigator?.maxTouchPoints ?? 0) > 0;
+  return prefersReduce || isCoarse;
+};
+
 export const initializeHomeAnimations = (refs) => {
   const {
     heroContent,
@@ -21,7 +33,16 @@ export const initializeHomeAnimations = (refs) => {
   const scheduleRefresh = () => {
     requestAnimationFrame(() => ScrollTrigger.refresh());
     setTimeout(() => ScrollTrigger.refresh(), 300);
+    setTimeout(() => ScrollTrigger.refresh(), 800);
   };
+
+  if (shouldSkipAnimations()) {
+    return;
+  }
+
+  if (ScrollTrigger.normalizeScroll) {
+    ScrollTrigger.normalizeScroll(false);
+  }
 
   // Hero section animation mirrors About Us hero sequence
   const heroTimeline = gsap.timeline({
@@ -33,12 +54,12 @@ export const initializeHomeAnimations = (refs) => {
   heroTimeline
     .from(heroContent, {
       autoAlpha: 0,
-      duration: 1.5
+      duration: 1.1
     })
     .from(heroTitle, {
       y: 100,
       autoAlpha: 0,
-      duration: 1.2,
+      duration: 0.9,
       ease: 'power4.out'
     }, '-=0.8')
     .from(
@@ -46,7 +67,7 @@ export const initializeHomeAnimations = (refs) => {
       {
         y: 50,
         autoAlpha: 0,
-        duration: 1,
+        duration: 0.7,
         stagger: 0.2
       },
       '-=0.7'
@@ -64,12 +85,12 @@ export const initializeHomeAnimations = (refs) => {
     gsap.to(featureItems, {
       scrollTrigger: {
         trigger: featuresGrid,
-        start: 'top 85%',
+        start: 'top 80%',
         once: true
       },
       y: 0,
       autoAlpha: 1,
-      duration: 0.6,
+      duration: 0.5,
       stagger: 0.12,
       ease: 'power2.out'
     });
@@ -86,12 +107,12 @@ export const initializeHomeAnimations = (refs) => {
       gsap.to(aboutText, {
         scrollTrigger: {
           trigger: aboutSection,
-          start: 'top 85%',
+          start: 'top 80%',
           once: true
         },
         x: 0,
         autoAlpha: 1,
-        duration: 0.6,
+        duration: 0.5,
         ease: 'power2.out'
       });
     }
@@ -105,12 +126,12 @@ export const initializeHomeAnimations = (refs) => {
       gsap.to(aboutImage, {
         scrollTrigger: {
           trigger: aboutSection,
-          start: 'top 85%',
+          start: 'top 80%',
           once: true
         },
         x: 0,
         autoAlpha: 1,
-        duration: 0.6,
+        duration: 0.5,
         ease: 'power2.out'
       });
     }
@@ -128,12 +149,12 @@ export const initializeHomeAnimations = (refs) => {
     gsap.to(featureItems, {
       scrollTrigger: {
         trigger: aboutFeatures,
-        start: 'top 85%',
+        start: 'top 80%',
         once: true
       },
       y: 0,
       autoAlpha: 1,
-      duration: 0.5,
+      duration: 0.45,
       stagger: {
         each: 0.1,
         from: 'start'
@@ -152,12 +173,12 @@ export const initializeHomeAnimations = (refs) => {
     gsap.to(servicesTitle, {
       scrollTrigger: {
         trigger: servicesSection,
-        start: 'top 85%',
+        start: 'top 80%',
         once: true
       },
       y: 0,
       opacity: 1,
-      duration: 0.7,
+      duration: 0.55,
       ease: 'power2.out'
     });
   }
@@ -178,13 +199,13 @@ export const initializeHomeAnimations = (refs) => {
     gsap.to(card, {
       scrollTrigger: {
         trigger: card,
-        start: 'top 90%',
+        start: 'top 80%',
         once: true
       },
       x: 0,
       opacity: 1,
       scale: 1,
-      duration: 1.2,
+      duration: 0.8,
       ease: 'power2.out'
     });
   });

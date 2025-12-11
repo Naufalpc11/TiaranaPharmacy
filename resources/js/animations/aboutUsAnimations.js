@@ -4,11 +4,32 @@ import { TextPlugin } from 'gsap/TextPlugin';
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
+const shouldSkipAnimations = () => {
+  if (typeof window === 'undefined') return false;
+  const prefersReduce =
+    typeof matchMedia !== 'undefined' &&
+    matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isCoarse =
+    (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches) ||
+    'ontouchstart' in window ||
+    (navigator?.maxTouchPoints ?? 0) > 0;
+  return prefersReduce || isCoarse;
+};
+
 export const initializeAboutUsAnimations = () => {
   const scheduleRefresh = () => {
     requestAnimationFrame(() => ScrollTrigger.refresh());
     setTimeout(() => ScrollTrigger.refresh(), 300);
+    setTimeout(() => ScrollTrigger.refresh(), 800);
   };
+
+  if (shouldSkipAnimations()) {
+    return;
+  }
+
+  if (ScrollTrigger.normalizeScroll) {
+    ScrollTrigger.normalizeScroll(false);
+  }
 
   const heroTimeline = gsap.timeline({
     defaults: { ease: 'power3.out' }
@@ -37,13 +58,13 @@ export const initializeAboutUsAnimations = () => {
     gsap.timeline({
       scrollTrigger: {
         trigger: visionSection,
-        start: 'top 85%',
+        start: 'top 75%',
         once: true
       }
     }).from(visionText, {
       y: 50,
       opacity: 0,
-      duration: 1,
+      duration: 0.8,
       ease: 'power3.out'
     });
   }
@@ -53,7 +74,7 @@ export const initializeAboutUsAnimations = () => {
     const historySectionTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: '.history-section',
-        start: 'top 85%',
+        start: 'top 70%',
         once: true
       }
     });
@@ -62,12 +83,12 @@ export const initializeAboutUsAnimations = () => {
       .from('.history-content h2', {
         y: 50,
         opacity: 0,
-        duration: 0.8,
+        duration: 0.65,
         ease: 'back.out(1.7)'
       })
       .from('.history-content p', {
         opacity: 0,
-        duration: 1,
+        duration: 0.8,
         y: 30,
         ease: 'power3.out'
       }, '-=0.4');
@@ -116,12 +137,12 @@ export const initializeAboutUsAnimations = () => {
   gsap.from('.history-stats .history-stat-card', {
     scrollTrigger: {
       trigger: '.history-section',
-      start: 'top 85%',
+      start: 'top 75%',
       once: true
     },
     y: 40,
     opacity: 0,
-    duration: 0.8,
+    duration: 0.65,
     stagger: { each: 0.15, ease: 'power3.out' },
     clearProps: 'transform,opacity'
   });
@@ -130,7 +151,7 @@ export const initializeAboutUsAnimations = () => {
   const locationTimeline = gsap.timeline({
     scrollTrigger: {
       trigger: '.location-section',
-      start: 'top 85%',
+      start: 'top 70%',
       once: true
     }
   });
@@ -139,13 +160,13 @@ export const initializeAboutUsAnimations = () => {
     .from('.location-section h2', {
       y: 30,
       opacity: 0,
-      duration: 0.8,
+      duration: 0.65,
       ease: 'back.out(1.7)'
     })
     .from('.contact-info-card', {
       x: -50,
       opacity: 0,
-      duration: 0.8,
+      duration: 0.6,
       stagger: {
         each: 0.2,
         ease: 'power3.out'
@@ -154,7 +175,7 @@ export const initializeAboutUsAnimations = () => {
     .from('.map-container', {
       scale: 0.9,
       opacity: 0,
-      duration: 1,
+      duration: 0.8,
       ease: 'power3.out'
     }, '-=0.6');
 

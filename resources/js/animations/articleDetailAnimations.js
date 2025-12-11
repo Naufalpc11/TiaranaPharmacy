@@ -3,6 +3,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const shouldSkipAnimations = () => {
+  if (typeof window === 'undefined') return false;
+  const prefersReduce =
+    typeof matchMedia !== 'undefined' &&
+    matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isCoarse =
+    (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches) ||
+    'ontouchstart' in window ||
+    (navigator?.maxTouchPoints ?? 0) > 0;
+  return prefersReduce || isCoarse;
+};
+
 export const initializeArticleDetailAnimations = (refs = {}) => {
   const {
     heroOverlay,
@@ -15,7 +27,16 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
   const scheduleRefresh = () => {
     requestAnimationFrame(() => ScrollTrigger.refresh());
     setTimeout(() => ScrollTrigger.refresh(), 300);
+    setTimeout(() => ScrollTrigger.refresh(), 800);
   };
+
+  if (shouldSkipAnimations()) {
+    return;
+  }
+
+  if (ScrollTrigger.normalizeScroll) {
+    ScrollTrigger.normalizeScroll(false);
+  }
 
   const heroTimeline = gsap.timeline({
     defaults: { ease: 'power3.out' },
@@ -24,7 +45,7 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
   if (heroOverlay) {
     heroTimeline.from(heroOverlay, {
       autoAlpha: 0,
-      duration: 1.2,
+      duration: 1,
     });
   }
 
@@ -34,7 +55,7 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
       {
         y: 20,
         autoAlpha: 0,
-        duration: 0.6,
+        duration: 0.5,
       },
       '-=0.8'
     );
@@ -46,7 +67,7 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
       {
         y: 80,
         autoAlpha: 0,
-        duration: 1,
+        duration: 0.85,
         ease: 'power4.out',
       },
       '-=0.6'
@@ -59,7 +80,7 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
       {
         y: 40,
         autoAlpha: 0,
-        duration: 0.7,
+        duration: 0.55,
       },
       '-=0.5'
     );
@@ -69,12 +90,12 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
     gsap.from(contentCard, {
       scrollTrigger: {
         trigger: contentCard,
-        start: 'top 85%',
+        start: 'top 80%',
         once: true,
       },
       y: 60,
       autoAlpha: 0,
-      duration: 1,
+      duration: 0.75,
       ease: 'power3.out',
     });
 
@@ -86,12 +107,12 @@ export const initializeArticleDetailAnimations = (refs = {}) => {
       gsap.from(contentBlocks, {
         scrollTrigger: {
           trigger: contentCard,
-          start: 'top 75%',
+          start: 'top 70%',
           once: true,
         },
         y: 20,
         autoAlpha: 0,
-        duration: 0.6,
+        duration: 0.5,
         stagger: {
           each: 0.08,
           from: 'start',

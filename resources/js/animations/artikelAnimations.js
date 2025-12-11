@@ -3,6 +3,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const shouldSkipAnimations = () => {
+  if (typeof window === 'undefined') return false;
+  const prefersReduce =
+    typeof matchMedia !== 'undefined' &&
+    matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isCoarse =
+    (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches) ||
+    'ontouchstart' in window ||
+    (navigator?.maxTouchPoints ?? 0) > 0;
+  return prefersReduce || isCoarse;
+};
+
 export const initializeArtikelAnimations = (refs = {}) => {
   const {
     heroOverlay,
@@ -15,7 +27,16 @@ export const initializeArtikelAnimations = (refs = {}) => {
   const scheduleRefresh = () => {
     requestAnimationFrame(() => ScrollTrigger.refresh());
     setTimeout(() => ScrollTrigger.refresh(), 300);
+    setTimeout(() => ScrollTrigger.refresh(), 800);
   };
+
+  if (shouldSkipAnimations()) {
+    return;
+  }
+
+  if (ScrollTrigger.normalizeScroll) {
+    ScrollTrigger.normalizeScroll(false);
+  }
 
   const heroTimeline = gsap.timeline({
     defaults: { ease: 'power3.out' },
@@ -24,7 +45,7 @@ export const initializeArtikelAnimations = (refs = {}) => {
   if (heroOverlay) {
     heroTimeline.from(heroOverlay, {
       autoAlpha: 0,
-      duration: 1.2,
+      duration: 1,
     });
   }
 
@@ -34,7 +55,7 @@ export const initializeArtikelAnimations = (refs = {}) => {
       {
         y: 80,
         autoAlpha: 0,
-        duration: 1,
+        duration: 0.85,
         ease: 'power4.out',
       },
       heroOverlay ? '-=0.7' : 0
@@ -47,7 +68,7 @@ export const initializeArtikelAnimations = (refs = {}) => {
       {
         y: 40,
         autoAlpha: 0,
-        duration: 0.9,
+        duration: 0.75,
       },
       '-=0.6'
     );
@@ -59,7 +80,7 @@ export const initializeArtikelAnimations = (refs = {}) => {
       {
         y: 20,
         autoAlpha: 0,
-        duration: 0.6,
+        duration: 0.5,
       },
       '-=0.5'
     );
@@ -74,12 +95,12 @@ export const initializeArtikelAnimations = (refs = {}) => {
       gsap.from(cards, {
         scrollTrigger: {
           trigger: artikelGrid,
-          start: 'top 80%',
+          start: 'top 75%',
           once: true,
         },
         y: 60,
         autoAlpha: 0,
-        duration: 0.8,
+        duration: 0.65,
         ease: 'power3.out',
         stagger: {
           each: 0.15,
