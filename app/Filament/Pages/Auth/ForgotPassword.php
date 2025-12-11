@@ -5,7 +5,8 @@ namespace App\Filament\Pages\Auth;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
-use App\Services\SupabaseService;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Password;
 
 class ForgotPassword extends \Filament\Pages\Page
 {
@@ -47,15 +48,18 @@ class ForgotPassword extends \Filament\Pages\Page
             return;
         }
 
-        $supabase = app(SupabaseService::class);
-        $result = $supabase->sendPasswordResetEmail($user->email);
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            return url(route('password.reset.form', ['token' => $token, 'email' => $user->email], false));
+        });
 
-        if (! $result['success']) {
-            \Log::error('Supabase reset password email: ' . $result['message']);
+        $status = Password::sendResetLink(['email' => $user->email]);
 
+        ResetPassword::createUrlUsing(null);
+
+        if ($status !== Password::RESET_LINK_SENT) {
             Notification::make()
                 ->title('Gagal mengirim email')
-                ->body($result['message'])
+                ->body(__($status))
                 ->danger()
                 ->send();
             return;

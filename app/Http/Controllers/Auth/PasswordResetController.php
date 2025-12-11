@@ -4,21 +4,17 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\SupabaseService;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class PasswordResetController extends Controller
 {
-    protected SupabaseService $supabase;
-
-    public function __construct(SupabaseService $supabase)
-    {
-        $this->supabase = $supabase;
-    }
-
     /**
-     * Handle forgot password request via Supabase
+     * Kirim link reset password via email Laravel (tanpa Supabase)
      */
     public function forgot(Request $request)
     {
@@ -32,19 +28,25 @@ class PasswordResetController extends Controller
             return back()->withErrors(['email' => 'User tidak ditemukan']);
         }
 
-        // Send reset email via Supabase Auth
-        $result = $this->supabase->sendPasswordResetEmail($user->email);
+        // Buat URL reset menggunakan route kita sendiri
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            return url(route('password.reset.form', ['token' => $token, 'email' => $user->email], false));
+        });
 
-        if (!$result['success']) {
-            \Log::error('Supabase reset password error: ' . $result['message']);
-            return back()->withErrors(['email' => $result['message'] ?: 'Gagal mengirim email. Hubungi administrator.']);
+        $status = Password::sendResetLink(['email' => $user->email]);
+
+        // Kembalikan generator URL ke default
+        ResetPassword::createUrlUsing(null);
+
+        if ($status !== Password::RESET_LINK_SENT) {
+            return back()->withErrors(['email' => __($status)]);
         }
 
         return back()->with('status', 'Link reset password telah dikirim ke email Anda. Cek inbox atau folder spam.');
     }
 
     /**
-     * Handle password reset via Supabase
+     * Reset password menggunakan token Laravel (tanpa Supabase)
      */
     public function reset(Request $request)
     {
@@ -54,22 +56,21 @@ class PasswordResetController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
-        // Verify token and reset password via Supabase
-        $result = $this->supabase->resetPassword(
-            $request->email,
-            $request->token,
-            $request->password
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($request->password),
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
         );
 
-        if (!$result['success']) {
-            \Log::error('Reset password failed: ' . $result['message']);
-            return back()->withErrors(['token' => $result['message']]);
-        }
-
-        // Also update local database password for sync
-        $user = User::where('email', $request->email)->first();
-        if ($user) {
-            $user->update(['password' => Hash::make($request->password)]);
+        if ($status !== Password::PASSWORD_RESET) {
+            return back()->withErrors(['email' => __($status)]);
         }
 
         return redirect('/admin/login')->with('status', 'Password berhasil direset. Silakan login dengan password baru.');

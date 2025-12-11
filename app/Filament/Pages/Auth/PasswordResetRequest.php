@@ -2,14 +2,15 @@
 
 namespace App\Filament\Pages\Auth;
 
-use App\Services\SupabaseService;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
 use Filament\Pages\Auth\PasswordReset\RequestPasswordReset as BaseRequestPasswordReset;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 
 class PasswordResetRequest extends BaseRequestPasswordReset
 {
@@ -31,19 +32,23 @@ class PasswordResetRequest extends BaseRequestPasswordReset
     {
         $email = $this->getTargetEmail();
 
-        $supabase = app(SupabaseService::class);
-        $result = $supabase->sendPasswordResetEmail($email);
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            return url(route('password.reset.form', ['token' => $token, 'email' => $user->email], false));
+        });
 
-        Log::info('[PasswordResetRequest] sendPasswordResetEmail', [
+        $status = Password::sendResetLink(['email' => $email]);
+
+        ResetPassword::createUrlUsing(null);
+
+        Log::info('[PasswordResetRequest] sendResetLink', [
             'email' => $email,
-            'success' => $result['success'] ?? null,
-            'message' => $result['message'] ?? null,
+            'status' => $status,
         ]);
 
-        if (! $result['success']) {
+        if ($status !== Password::RESET_LINK_SENT) {
             Notification::make()
                 ->title('Gagal mengirim email')
-                ->body($result['message'])
+                ->body(__($status))
                 ->danger()
                 ->send();
 

@@ -117,10 +117,16 @@ Route::get('/test-signin', function(SupabaseService $supabase) {
 })->name('test.signin');
 
 // Routes untuk forgot password & reset password
-Route::view('/auth/forgot-password', 'filament.admin.forgot-password')
-    ->name('password.forgot.form');
-Route::view('/auth/reset-password', 'filament.admin.reset-password')
-    ->name('password.reset.form');
+Route::get('/auth/forgot-password', function () {
+    return view('filament.admin.forgot-password');
+})->name('password.forgot.form');
+
+Route::get('/auth/reset-password/{token}', function (string $token) {
+    return view('filament.admin.reset-password', [
+        'token' => $token,
+        'email' => request('email'),
+    ]);
+})->name('password.reset.form');
 Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot'])
     ->name('password.forgot');
 Route::post('/auth/reset-password', [PasswordResetController::class, 'reset'])
