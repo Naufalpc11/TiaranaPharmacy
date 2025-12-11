@@ -18,6 +18,11 @@ export const initializeHomeAnimations = (refs) => {
     servicesTitle,
   } = refs;
 
+  const scheduleRefresh = () => {
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+    setTimeout(() => ScrollTrigger.refresh(), 300);
+  };
+
   // Hero section animation mirrors About Us hero sequence
   const heroTimeline = gsap.timeline({
     defaults: {
@@ -183,4 +188,6 @@ export const initializeHomeAnimations = (refs) => {
       ease: 'power2.out'
     });
   });
+
+  scheduleRefresh();
 };

@@ -5,6 +5,10 @@ import { TextPlugin } from 'gsap/TextPlugin';
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
 export const initializeAboutUsAnimations = () => {
+  const scheduleRefresh = () => {
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+    setTimeout(() => ScrollTrigger.refresh(), 300);
+  };
 
   const heroTimeline = gsap.timeline({
     defaults: { ease: 'power3.out' }
@@ -33,7 +37,7 @@ export const initializeAboutUsAnimations = () => {
     gsap.timeline({
       scrollTrigger: {
         trigger: visionSection,
-        start: 'top 75%',
+        start: 'top 85%',
         once: true
       }
     }).from(visionText, {
@@ -49,7 +53,7 @@ export const initializeAboutUsAnimations = () => {
     const historySectionTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: '.history-section',
-        start: 'top 70%',
+        start: 'top 85%',
         once: true
       }
     });
@@ -112,7 +116,7 @@ export const initializeAboutUsAnimations = () => {
   gsap.from('.history-stats .history-stat-card', {
     scrollTrigger: {
       trigger: '.history-section',
-      start: 'top 75%',
+      start: 'top 85%',
       once: true
     },
     y: 40,
@@ -126,7 +130,7 @@ export const initializeAboutUsAnimations = () => {
   const locationTimeline = gsap.timeline({
     scrollTrigger: {
       trigger: '.location-section',
-      start: 'top 70%',
+      start: 'top 85%',
       once: true
     }
   });
@@ -175,4 +179,6 @@ export const initializeAboutUsAnimations = () => {
       });
     });
   });
+
+  scheduleRefresh();
 };

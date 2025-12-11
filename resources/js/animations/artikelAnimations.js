@@ -12,6 +12,11 @@ export const initializeArtikelAnimations = (refs = {}) => {
     artikelGrid,
   } = refs;
 
+  const scheduleRefresh = () => {
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+    setTimeout(() => ScrollTrigger.refresh(), 300);
+  };
+
   const heroTimeline = gsap.timeline({
     defaults: { ease: 'power3.out' },
   });
@@ -84,4 +89,6 @@ export const initializeArtikelAnimations = (refs = {}) => {
       });
     }
   }
+
+  scheduleRefresh();
 };
