@@ -27,20 +27,22 @@ export const initializeAboutUsAnimations = () => {
       duration: 1
     }, '-=0.7');
 
-  const aboutContentTimeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: '.about-content',
-      start: 'top 75%',
-      once: true
-    }
-  });
-
-  aboutContentTimeline.from('.about-section p', {
-    y: 50,
-    opacity: 0,
-    duration: 1,
-    ease: 'power3.out'
-  });
+  const visionSection = document.querySelector('.vision-section');
+  const visionText = gsap.utils.toArray('.vision-section .vision-text');
+  if (visionSection && visionText.length) {
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: visionSection,
+        start: 'top 75%',
+        once: true
+      }
+    }).from(visionText, {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      ease: 'power3.out'
+    });
+  }
 
   const historySection = document.querySelector('.history-section');
   if (historySection) {
