@@ -74,7 +74,7 @@ class BugReportResource extends Resource
                     ->toggleable(),
                 BadgeColumn::make('status')
                     ->label('Status')
-                    ->enum(BugReport::statusLabels())
+                    ->formatStateUsing(fn (?string $state): string => BugReport::statusLabels()[$state] ?? ($state ?? ''))
                     ->colors([
                         'danger' => fn (?string $state): bool => $state === BugReport::STATUS_NEW,
                         'warning' => fn (?string $state): bool => $state === BugReport::STATUS_IN_PROGRESS,
